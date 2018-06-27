@@ -1,0 +1,75 @@
+{
+  "name": "moodboard",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-draggable": "^3.0.5",
+    "react-dropzone": "^4.2.12",
+    "react-resizable": "^1.7.5",
+    "react-rnd": "^8.0.1",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "prettier --write",
+      "git add",
+      "xo"
+    ]
+  },
+  "precommit": {
+    "run": [
+      "lint-staged"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "bracketSpacing": true
+  },
+  "xo": {
+    "parser": "babel-eslint",
+    "envs": [
+      "browser"
+    ],
+    "prettier": true,
+    "space": true,
+    "rules": {
+      "import/no-unassigned-import": 0,
+      "unicorn/filename-case": 0,
+      "camelcase": [
+        2,
+        {
+          "properties": "never"
+        }
+      ]
+    },
+    "extends": "xo-react",
+    "plugins": [
+      "react"
+    ]
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.5",
+    "eslint": "^5.0.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-xo": "^0.23.0",
+    "eslint-config-xo-react": "^0.16.0",
+    "eslint-plugin-react": "^7.10.0",
+    "lint-staged": "^7.2.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.13.6",
+    "prettier-eslint": "^8.8.2",
+    "xo": "^0.21.1"
+  }
+}
