@@ -17,31 +17,33 @@ if (firebase.apps.length <= 0) {
   app = firebase.initializeApp(config);
 }
 
-const auth = firebase.auth();
+const { auth } = firebase;
 const db = firebase.firestore(app);
 
 db.settings({ timestampsInSnapshots: true });
 
 const provider = new firebase.auth.GoogleAuthProvider();
 
-firebase
-  .auth()
-  .signInWithPopup(provider)
-  .then(result => {
-    const { user } = result;
+const login = () => {
+  return firebase
+    .auth()
+    .signInWithRedirect(provider)
+    .then(result => {
+      const { user } = result;
 
-    db.collection('users')
-      .doc(user.uid)
-      .set({
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        email: user.email
-      });
-  })
-  .catch(error => {
-    const { code, message, email, credential } = error;
+      db.collection('users')
+        .doc(user.uid)
+        .set({
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          email: user.email
+        });
+    })
+    .catch(error => {
+      const { code, message, email, credential } = error;
 
-    console.error({ code, message, email, credential });
-  });
+      console.error({ code, message, email, credential });
+    });
+};
 
-export { auth, db };
+export { auth, db, login };

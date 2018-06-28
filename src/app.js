@@ -1,37 +1,38 @@
 import React, { Component } from 'react';
-import Draggable from 'react-rnd';
-import Dropzone from 'react-dropzone';
+import { Route, Redirect, Link, Switch } from 'react-router-dom';
+import { Provider, Consumer } from './auth';
+import { auth } from './firebase';
+import Login from './pages/Login';
+import Boards from './pages/Boards';
+import Protected from './containers/Protected';
 
 class App extends Component {
-  state = {
-    images: []
-  };
-
-  onDrop = acceptedFiles => {
-    console.log(acceptedFiles);
-    this.setState(({ images }) => ({
-      images: [...images, ...acceptedFiles.map(file => file.preview)]
-    }));
-  };
-
   render() {
     return (
-      <div>
-        <h1>Moodboard</h1>
-        <Dropzone onDrop={this.onDrop} />
-        {this.state.images.map(image => (
-          <Draggable
-            key={image}
-            lockAspectRatio
-            default={{ x: 0, y: 0, width: 400 }}
-            style={{
-              border: 'solid 1px #ddd'
-            }}
-          >
-            <img draggable="false" src={image} />
-          </Draggable>
-        ))}
-      </div>
+      <Provider>
+        <h1>Moodz</h1>
+        <Link to="/boards">Boards</Link>
+        <Consumer>
+          {({ authenticated }) =>
+            authenticated && (
+              <button type="button" onClick={() => auth().signOut()}>
+                Logout
+              </button>
+            )
+          }
+        </Consumer>
+        <div>
+          <Switch>
+            <Redirect exact from="/" to="/boards" />
+
+            <Route path="/login" component={Login} />
+
+            <Protected>
+              <Route path="/boards" component={Boards} />
+            </Protected>
+          </Switch>
+        </div>
+      </Provider>
     );
   }
 }

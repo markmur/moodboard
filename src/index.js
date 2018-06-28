@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { auth } from './firebase';
+import { BrowserRouter as Router } from 'react-router-dom';
 import App from './app';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
-console.log({ auth });
-
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <Router>
+    <App />
+  </Router>,
+  document.getElementById('root')
+);
 
 registerServiceWorker();
