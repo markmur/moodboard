@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 const config = {
   apiKey: 'AIzaSyCWRkSFhOVTfGxe4eT_IcvmYFIyMQmn9tA',
@@ -10,11 +11,16 @@ const config = {
   messagingSenderId: '58231872924'
 };
 
+let app;
+
 if (firebase.apps.length <= 0) {
-  firebase.initializeApp(config);
+  app = firebase.initializeApp(config);
 }
 
 const auth = firebase.auth();
+const db = firebase.firestore(app);
+
+db.settings({ timestampsInSnapshots: true });
 
 const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -22,16 +28,20 @@ firebase
   .auth()
   .signInWithPopup(provider)
   .then(result => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const token = result.credential.accessToken;
-    // The signed-in user info.
     const { user } = result;
-    console.log({ token, user });
+
+    db.collection('users')
+      .doc(user.uid)
+      .set({
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: user.email
+      });
   })
   .catch(error => {
     const { code, message, email, credential } = error;
 
-    console.log({ code, message, email, credential });
+    console.error({ code, message, email, credential });
   });
 
-export { auth };
+export { auth, db };
