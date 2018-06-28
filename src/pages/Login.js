@@ -1,11 +1,11 @@
 import React from 'react';
-import { login } from '../firebase';
+import firebase from '../firebase';
 
 const Login = () => (
   <div>
     <h1>Moodboard</h1>
 
-    <button type="button" onClick={login}>
+    <button type="button" onClick={firebase.login}>
       Login with Google
     </button>
   </div>

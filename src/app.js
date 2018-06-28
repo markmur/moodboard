@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Link, Switch } from 'react-router-dom';
 import { Provider, Consumer } from './auth';
-import { auth } from './firebase';
+import firebase from './firebase';
 import Login from './pages/Login';
+import Board from './pages/Board';
 import Boards from './pages/Boards';
 import Protected from './containers/Protected';
 
@@ -15,7 +16,7 @@ class App extends Component {
         <Consumer>
           {({ authenticated }) =>
             authenticated && (
-              <button type="button" onClick={() => auth().signOut()}>
+              <button type="button" onClick={firebase.logout}>
                 Logout
               </button>
             )
@@ -29,6 +30,7 @@ class App extends Component {
 
             <Protected>
               <Route path="/boards" component={Boards} />
+              <Route path="/boards/:id" component={Board} />
             </Protected>
           </Switch>
         </div>
