@@ -30,7 +30,7 @@ class Board extends Component {
     const board = boardSnapshot.data();
     const images = imagesSnapshot.docs.map(x => x.data());
 
-    console.log({ board: { ...board, images } });
+    if (!board) this.props.history.replace('/boards');
 
     this.setState({
       board: { ...board, images }
@@ -77,6 +77,9 @@ class Board extends Component {
 }
 
 Board.propTypes = {
+  history: PropTypes.shape({
+    replace: PropTypes.func
+  }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.object
   }).isRequired
