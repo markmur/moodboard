@@ -1,17 +1,56 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Draggable from 'react-rnd';
 import Dropzone from 'react-dropzone';
+import firebase, { db } from '../firebase';
 
 class Board extends Component {
   state = {
-    images: []
+    board: {
+      images: []
+    }
   };
 
+  get boardId() {
+    return this.props.match.params.id;
+  }
+
+  async componentDidMount() {
+    firebase.getBoard(this.boardId);
+
+    const boardRef = db.collection('boards').doc(this.boardId);
+    const imagesRef = db
+      .collection('boards')
+      .doc(this.boardId)
+      .collection('images');
+
+    const boardSnapshot = await boardRef.get();
+    const imagesSnapshot = await imagesRef.get();
+
+    const board = boardSnapshot.data();
+    const images = imagesSnapshot.docs.map(x => x.data());
+
+    console.log({ board: { ...board, images } });
+
+    this.setState({
+      board: { ...board, images }
+    });
+  }
+
   onDrop = acceptedFiles => {
-    console.log(acceptedFiles);
     this.setState(({ images }) => ({
       images: [...images, ...acceptedFiles.map(file => file.preview)]
     }));
+
+    acceptedFiles.map(file =>
+      firebase.addImageToBoard(this.boardId, file, {
+        name: file.name
+      })
+    );
+  };
+
+  handleDragEnd = imageId => (event, { x, y }) => {
+    firebase.updateImagePosition(this.boardId, imageId, { x, y });
   };
 
   render() {
@@ -19,21 +58,28 @@ class Board extends Component {
       <div>
         <h1>Moodboard</h1>
         <Dropzone onDrop={this.onDrop} />
-        {this.state.images.map(image => (
+        {this.state.board.images.map(image => (
           <Draggable
-            key={image}
+            key={image.id}
             lockAspectRatio
-            default={{ x: 0, y: 0, width: 400 }}
+            default={{ x: image.position.x, y: image.position.y, width: 400 }}
             style={{
               border: 'solid 1px #ddd'
             }}
+            onDragStop={this.handleDragEnd(image.id)}
           >
-            <img draggable="false" src={image} />
+            <img draggable="false" src={image.href} />
           </Draggable>
         ))}
       </div>
     );
   }
 }
+
+Board.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.object
+  }).isRequired
+};
 
 export default Board;

@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import ow from 'ow';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/storage';
 
 const USERS = 'users';
 const BOARDS = 'boards';
@@ -30,6 +31,8 @@ const provider = new firebase.auth.GoogleAuthProvider();
 const validateStringArgsExist = (args = []) => {
   return args.map(arg => ow(arg, ow.string.nonEmpty));
 };
+
+window.db = db;
 
 class FirebaseClient {
   login() {
@@ -77,6 +80,10 @@ class FirebaseClient {
     });
   }
 
+  getBoard(id) {
+    return db.collection(BOARDS).get(id);
+  }
+
   uploadImage(blob, meta) {
     return storage().put(blob, meta);
   }
@@ -90,29 +97,47 @@ class FirebaseClient {
     console.log(percent + '% done');
   }
 
-  addImageToBoard(id, file, { x, y, name }) {
+  addImageToBoard(boardId, file, { name }) {
     const url = `images/${name}`;
-    const upload = storage.ref(url).put(file);
+    const ref = storage().ref(url);
+    const upload = ref.put(file);
 
     upload.on(firebase.storage.TaskEvent.STATE_CHANGED, {
       next: this.handleUploadProgress,
       error: this.handleImageUploadError,
       complete: async () => {
-        const referenceUrl = await storage.getDownloadURL();
+        const referenceUrl = await ref.getDownloadURL();
+        console.log({ referenceUrl });
 
-        db.collection(BOARDS)
-          .doc(id)
+        const newReference = db
+          .collection(BOARDS)
+          .doc(boardId)
           .collection(IMAGES)
-          .add({
-            name,
-            href: referenceUrl,
-            position: {
-              x,
-              y
-            }
-          });
+          .doc();
+
+        newReference.set({
+          id: newReference.id,
+          name,
+          href: referenceUrl,
+          position: {
+            x: 0,
+            y: 0
+          }
+        });
       }
     });
+  }
+
+  updateImagePosition(boardId, imageId, { x, y }) {
+    return db
+      .collection(`${BOARDS}/${boardId}/${IMAGES}`)
+      .doc(imageId)
+      .update({
+        position: {
+          x,
+          y
+        }
+      });
   }
 }
 

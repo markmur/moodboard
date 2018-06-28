@@ -15,6 +15,7 @@ class FirebaseAuthProvider extends Component {
   state = defaultAuthContext;
 
   componentDidMount() {
+    console.log(this.props);
     this.removeAuthListener = auth().onAuthStateChanged(user => {
       this.setState(
         user
@@ -24,7 +25,7 @@ class FirebaseAuthProvider extends Component {
               user
             }
           : defaultAuthContext,
-        () => this.props.history.replace('/')
+        () => this.props.history.replace(this.props.location.pathname)
       );
     });
   }
@@ -52,6 +53,9 @@ class FirebaseAuthProvider extends Component {
 
 FirebaseAuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired
   }).isRequired

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Route, Redirect, Link, Switch } from 'react-router-dom';
-import { Provider, Consumer } from './auth';
-import firebase from './firebase';
+import { Route, Redirect, Switch } from 'react-router-dom';
+import { Provider } from './auth';
+import Header from './components/Header';
 import Login from './pages/Login';
 import Board from './pages/Board';
 import Boards from './pages/Boards';
@@ -11,26 +11,16 @@ class App extends Component {
   render() {
     return (
       <Provider>
-        <h1>Moodz</h1>
-        <Link to="/boards">Boards</Link>
-        <Consumer>
-          {({ authenticated }) =>
-            authenticated && (
-              <button type="button" onClick={firebase.logout}>
-                Logout
-              </button>
-            )
-          }
-        </Consumer>
+        <Header />
+
         <div>
           <Switch>
-            <Redirect exact from="/" to="/boards" />
-
+            <Redirect exact from="/" to="/boards/1" />
             <Route path="/login" component={Login} />
 
             <Protected>
-              <Route path="/boards" component={Boards} />
-              <Route path="/boards/:id" component={Board} />
+              <Route exact path="/boards" component={Boards} />
+              <Route exact path="/boards/:id" component={Board} />
             </Protected>
           </Switch>
         </div>

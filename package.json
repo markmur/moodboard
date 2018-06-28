@@ -5,6 +5,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.3.2",
     "firebase": "^5.1.0",
+    "grid-styled": "^4.2.0",
     "ow": "^0.6.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
@@ -14,7 +15,8 @@
     "react-resizable": "^1.7.5",
     "react-rnd": "^8.0.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "styled-components": "^3.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
