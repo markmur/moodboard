@@ -1,31 +1,55 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Flex } from 'grid-styled';
-import { Consumer } from '../auth';
+import styled from 'styled-components';
+import { Consumer } from '../AuthProvider';
 import firebase from '../firebase';
 
+const Nav = styled.header`
+  background: white;
+  padding: 1em 2em;
+  margin-bottom: 2em;
+
+  h1 {
+    font-weight: bolder;
+  }
+
+  ul {
+    display: flex;
+
+    li a {
+      padding: 0.5em 1em;
+    }
+  }
+`;
+
 const Header = () => (
-  <header>
-    <Flex wrap={false} justify="space-between">
-      <h1>Mood.</h1>
+  <Nav>
+    <Flex flexWrap={false} justify="space-between" align="center">
+      <h1>
+        <Link to="/">Mood.</Link>
+      </h1>
       <ul>
         <li>
           <Link to="/boards">My Boards</Link>
         </li>
         <li>
+          <Link to="/boards/new">New Board</Link>
+        </li>
+        <li>
           <Consumer>
             {({ authenticated }) =>
               authenticated && (
-                <button type="button" onClick={firebase.logout}>
+                <a type="button" onClick={firebase.logout}>
                   Logout
-                </button>
+                </a>
               )
             }
           </Consumer>
         </li>
       </ul>
     </Flex>
-  </header>
+  </Nav>
 );
 
 export default Header;

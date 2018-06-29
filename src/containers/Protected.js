@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
-import { Consumer } from '../auth';
+import { Consumer } from '../AuthProvider';
 
 class Protected extends Component {
   render() {

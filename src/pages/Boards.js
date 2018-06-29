@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Flex, Box } from 'grid-styled';
-import { Consumer } from '../auth';
+import { Consumer } from '../AuthProvider';
 import { db } from '../firebase';
 
 class Boards extends Component {
@@ -31,25 +31,25 @@ class Boards extends Component {
 
   render() {
     return (
-      <div>
-        <h1>My Boards</h1>
-
-        <Flex p={2}>
-          {this.state.boards.map(board => (
-            <Box
-              key={board.id}
-              width={1 / 3}
-              p={2}
-              style={{ border: '1px solid #ddd', background: 'white' }}
-            >
-              <Link to={`/boards/${board.id}`}>
-                <h4>{board.name}</h4>
-                <p>{board.description}</p>
-              </Link>
-            </Box>
-          ))}
-        </Flex>
-      </div>
+      <Flex p={2}>
+        {this.state.boards.map(board => (
+          <Box
+            key={board.id}
+            width={1 / 3}
+            p={4}
+            style={{
+              border: '1px solid #ddd',
+              background: 'white',
+              borderRadius: 3
+            }}
+          >
+            <Link to={`/boards/${board.id}`}>
+              <h2>{board.name}</h2>
+              <p>{board.description}</p>
+            </Link>
+          </Box>
+        ))}
+      </Flex>
     );
   }
 }

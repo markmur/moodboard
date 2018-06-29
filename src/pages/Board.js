@@ -2,7 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-rnd';
 import Dropzone from 'react-dropzone';
+import styled from 'styled-components';
 import firebase, { db } from '../firebase';
+
+const BoardContainer = styled.div`
+  min-height: 300vh;
+`;
+
+const BoardName = styled.input``;
 
 class Board extends Component {
   state = {
@@ -53,10 +60,41 @@ class Board extends Component {
     firebase.updateImagePosition(this.boardId, imageId, { x, y });
   };
 
+  updateBoardName = newName => {
+    try {
+      db.collection('boards')
+        .doc(this.boardId)
+        .update({
+          name: newName
+        });
+    } catch (err) {
+      console.log('Error updating board name', { err });
+    }
+  };
+
+  handleBoardNameBlur = () => {
+    this.updateBoardName(this.state.board.name);
+  };
+
+  handleBoardNameChange = event => {
+    if (event.target.value) {
+      this.setState(({ board }) => ({
+        ...board,
+        name: event.target.value
+      }));
+    }
+  };
+
   render() {
     return (
-      <div>
-        <h1>Moodboard</h1>
+      <BoardContainer>
+        <BoardName
+          value={this.state.board.name}
+          placeholder="Board Name"
+          onChange={this.handleBoardNameChange}
+          onBlur={this.handleBoardNameBlur}
+        />
+
         <Dropzone onDrop={this.onDrop} />
         {this.state.board.images.map(image => (
           <Draggable
@@ -71,7 +109,7 @@ class Board extends Component {
             <img draggable="false" src={image.href} />
           </Draggable>
         ))}
-      </div>
+      </BoardContainer>
     );
   }
 }

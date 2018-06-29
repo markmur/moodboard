@@ -2793,6 +2793,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
+dialog-polyfill@^0.4.7:
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/dialog-polyfill/-/dialog-polyfill-0.4.10.tgz#c4ea68a0deed4abb59a6a2a025c548b278cd532e"
+
 didyoumean@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.1.tgz#e92edfdada6537d484d73c0172fd1eba0c4976ff"
@@ -4036,6 +4040,12 @@ firebase@^5.1.0:
     "@firebase/messaging" "0.3.5"
     "@firebase/polyfill" "0.3.3"
     "@firebase/storage" "0.2.3"
+
+firebaseui@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-3.1.1.tgz#f5ede364535ccd07d1310cc53b945fa38bfa87b8"
+  dependencies:
+    dialog-polyfill "^0.4.7"
 
 flat-arguments@^1.0.0:
   version "1.0.2"

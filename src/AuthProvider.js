@@ -15,7 +15,6 @@ class FirebaseAuthProvider extends Component {
   state = defaultAuthContext;
 
   componentDidMount() {
-    console.log(this.props);
     this.removeAuthListener = auth().onAuthStateChanged(user => {
       this.setState(
         user
@@ -25,7 +24,7 @@ class FirebaseAuthProvider extends Component {
               user
             }
           : defaultAuthContext,
-        () => this.props.history.replace(this.props.location.pathname)
+        () => this.props.history.replace('/boards')
       );
     });
   }

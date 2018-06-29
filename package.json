@@ -5,6 +5,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.3.2",
     "firebase": "^5.1.0",
+    "firebaseui": "^3.1.1",
     "grid-styled": "^4.2.0",
     "ow": "^0.6.0",
     "prop-types": "^15.6.2",

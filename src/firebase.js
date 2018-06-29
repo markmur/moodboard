@@ -32,15 +32,15 @@ const validateStringArgsExist = (args = []) => {
   return args.map(arg => ow(arg, ow.string.nonEmpty));
 };
 
-window.db = db;
-
 class FirebaseClient {
   login() {
+    console.log('Logging in...');
     return auth()
       .signInWithRedirect(provider)
       .then(result => {
         const { user } = result;
 
+        console.log({ user });
         this.createOrUpdateUser(user);
       })
       .catch(error => {
