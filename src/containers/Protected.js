@@ -8,8 +8,10 @@ class Protected extends Component {
     const { children } = this.props;
     return (
       <Consumer>
-        {({ authenticated }) => {
-          if (authenticated) {
+        {({ authenticated, loading }) => {
+          if (loading) return null;
+
+          if (authenticated && !loading) {
             console.log('Authenticated, displaying content.');
             return children;
           }

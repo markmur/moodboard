@@ -24,13 +24,21 @@ class FirebaseAuthProvider extends Component {
               user
             }
           : defaultAuthContext,
-        () => this.props.history.replace('/boards')
+        this.redirect
       );
     });
   }
 
   componentWillUnmount() {
     this.removeAuthListener();
+  }
+
+  redirect() {
+    const { location, history } = this.props;
+    const route =
+      location.pathname === '/login' ? '/boards' : location.pathname;
+
+    return history.replace(route);
   }
 
   getUser({ displayName, photoURL, uid }) {

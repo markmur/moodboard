@@ -29,9 +29,14 @@ class Login extends Component {
   };
 
   componentDidMount() {
-    const ui = new firebaseui.auth.AuthUI(auth());
+    let ui = firebaseui.auth.AuthUI.getInstance();
+
+    if (!ui) {
+      ui = new firebaseui.auth.AuthUI(auth());
+    }
 
     ui.start('#firebaseui-auth-container', {
+      signInFlow: 'popup',
       signInOptions: [auth.GoogleAuthProvider.PROVIDER_ID],
       callbacks: {
         signInSuccessWithAuthResult: authResult => {

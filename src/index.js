@@ -5,11 +5,22 @@ import App from './app';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
-ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
-  document.getElementById('root')
-);
+const outlet = document.getElementById('root');
 
+const render = () => {
+  ReactDOM.render(
+    <Router>
+      <App />
+    </Router>,
+    outlet
+  );
+};
+
+render();
 registerServiceWorker();
+
+if (module.hot) {
+  module.hot.accept('./app', () => {
+    render();
+  });
+}

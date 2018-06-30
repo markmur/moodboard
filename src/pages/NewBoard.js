@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { Consumer } from '../AuthProvider';
 import firebase from '../firebase';
 
 const Container = styled.div`
@@ -65,9 +66,7 @@ class NewBoard extends Component {
       description
     };
 
-    if (this.validate(board)) {
-      this.create();
-    }
+    if (this.validate(board)) this.create(board);
   };
 
   validate(board = {}) {
@@ -85,15 +84,20 @@ class NewBoard extends Component {
   }
 
   async create(board) {
-    try {
-      const newBoard = await firebase.createBoard(board);
-      this.props.history.replace(`/boards/${newBoard.id}`);
-    } catch (err) {
-      this.setState(({ errors }) => ({
-        ...errors,
-        global: err
-      }));
-    }
+    console.log('Creating new board...', { board });
+    firebase
+      .createBoard(this.props.userId, board)
+      .then(newBoard => {
+        console.log({ newBoard });
+        console.log(`Redirecting to /boards/${newBoard.id}`, this.props);
+        this.props.history.replace(`/boards/${newBoard.id}`);
+      })
+      .catch(err => {
+        this.setState(({ errors }) => ({
+          ...errors,
+          global: err
+        }));
+      });
   }
 
   renderErrorMessage = field => {
@@ -123,7 +127,7 @@ class NewBoard extends Component {
             {this.renderErrorMessage('description')}
           </div>
 
-          <SubmitButton value="Create Board" />
+          <SubmitButton type="submit" value="Create Board" />
         </form>
       </Container>
     );
@@ -131,9 +135,12 @@ class NewBoard extends Component {
 }
 
 NewBoard.propTypes = {
+  userId: PropTypes.string.isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func
   }).isRequired
 };
 
-export default NewBoard;
+export default props => (
+  <Consumer>{({ user }) => <NewBoard userId={user.uid} {...props} />}</Consumer>
+);

@@ -5,24 +5,49 @@ import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import firebase, { db } from '../firebase';
 
+const StyledDropzone = styled(Dropzone)`
+  position: fixed;
+  top: 103px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+`;
+
 const BoardContainer = styled.div`
   min-height: 300vh;
 `;
 
-const BoardName = styled.input``;
+const BoardName = styled.input`
+  display: block;
+  background: transparent;
+  border: none;
+  font-size: 5rem;
+  font-weight: bolder;
+  outline: none;
+`;
+
+const BoardDescription = BoardName.extend`
+  font-size: 1.35em;
+  font-weight: normal;
+  color: #333;
+`;
 
 class Board extends Component {
   state = {
-    board: {
-      images: []
-    }
+    loading: true,
+    name: '',
+    description: '',
+    images: []
   };
 
   get boardId() {
     return this.props.match.params.id;
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     firebase.getBoard(this.boardId);
 
     const boardRef = db.collection('boards').doc(this.boardId);
@@ -31,22 +56,31 @@ class Board extends Component {
       .doc(this.boardId)
       .collection('images');
 
-    const boardSnapshot = await boardRef.get();
-    const imagesSnapshot = await imagesRef.get();
+    boardRef.onSnapshot(board => {
+      if (!board) this.props.history.replace('/boards');
 
-    const board = boardSnapshot.data();
-    const images = imagesSnapshot.docs.map(x => x.data());
-
-    if (!board) this.props.history.replace('/boards');
-
-    this.setState({
-      board: { ...board, images }
+      imagesRef.onSnapshot(images => {
+        this.setState({
+          loading: false,
+          ...board.data(),
+          images: images.docs.map(x => x.data())
+        });
+      });
     });
   }
 
   onDrop = acceptedFiles => {
     this.setState(({ images }) => ({
-      images: [...images, ...acceptedFiles.map(file => file.preview)]
+      images: [
+        ...images,
+        ...acceptedFiles.map(file => ({
+          href: file.preview,
+          position: {
+            x: 0,
+            y: 0
+          }
+        }))
+      ]
     }));
 
     acceptedFiles.map(file =>
@@ -60,28 +94,29 @@ class Board extends Component {
     firebase.updateImagePosition(this.boardId, imageId, { x, y });
   };
 
-  updateBoardName = newName => {
+  updateBoard = (field, value) => {
     try {
       db.collection('boards')
         .doc(this.boardId)
         .update({
-          name: newName
+          [field]: value
         });
     } catch (err) {
       console.log('Error updating board name', { err });
     }
   };
 
-  handleBoardNameBlur = () => {
-    this.updateBoardName(this.state.board.name);
+  handleBlur = field => () => {
+    this.updateBoard(field, this.state[field]);
   };
 
-  handleBoardNameChange = event => {
-    if (event.target.value) {
-      this.setState(({ board }) => ({
-        ...board,
-        name: event.target.value
-      }));
+  handleChange = field => event => {
+    const { value } = event.target;
+
+    if (value) {
+      this.setState({
+        [field]: value
+      });
     }
   };
 
@@ -89,14 +124,29 @@ class Board extends Component {
     return (
       <BoardContainer>
         <BoardName
-          value={this.state.board.name}
-          placeholder="Board Name"
-          onChange={this.handleBoardNameChange}
-          onBlur={this.handleBoardNameBlur}
+          defaultValue={this.state.name}
+          placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
+          onChange={this.handleChange('name')}
+          onBlur={this.handleBlur('name')}
         />
 
-        <Dropzone onDrop={this.onDrop} />
-        {this.state.board.images.map(image => (
+        <BoardDescription
+          placeholder={this.state.loading ? '' : 'No description'}
+          onChange={this.handleChange('description')}
+          onBlur={this.handleBlur('description')}
+          value={this.state.description}
+        />
+
+        <StyledDropzone
+          disableClick
+          onDrop={this.onDrop}
+          style={{ position: 'fixed' }}
+          activeStyle={{
+            border: '5em solid rgba(102, 51, 153, 0.3)'
+          }}
+        />
+
+        {this.state.images.map(image => (
           <Draggable
             key={image.id}
             lockAspectRatio

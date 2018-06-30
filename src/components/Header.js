@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Flex } from 'grid-styled';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ const Nav = styled.header`
 
   ul {
     display: flex;
+    align-items: center;
 
     li a {
       padding: 0.5em 1em;
@@ -23,30 +24,42 @@ const Nav = styled.header`
   }
 `;
 
+const Avatar = styled.img.attrs({
+  width: 35
+})`
+  border-radius: 50%;
+`;
+
 const Header = () => (
   <Nav>
     <Flex flexWrap={false} justify="space-between" align="center">
-      <h1>
-        <Link to="/">Mood.</Link>
-      </h1>
+      <Link to="/">
+        <h1>Mood.</h1>
+      </Link>
       <ul>
         <li>
           <Link to="/boards">My Boards</Link>
         </li>
-        <li>
-          <Link to="/boards/new">New Board</Link>
-        </li>
-        <li>
-          <Consumer>
-            {({ authenticated }) =>
-              authenticated && (
-                <a type="button" onClick={firebase.logout}>
-                  Logout
-                </a>
-              )
-            }
-          </Consumer>
-        </li>
+        <Consumer>
+          {({ authenticated, user }) =>
+            authenticated && (
+              <Fragment>
+                <li>
+                  <Avatar src={user.photoURL} />
+                </li>
+                <li>
+                  <a
+                    type="button"
+                    style={{ cursor: 'pointer' }}
+                    onClick={firebase.logout}
+                  >
+                    Logout
+                  </a>
+                </li>
+              </Fragment>
+            )
+          }
+        </Consumer>
       </ul>
     </Flex>
   </Nav>

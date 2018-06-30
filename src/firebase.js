@@ -26,30 +26,12 @@ if (firebase.apps.length <= 0) {
 const { auth, storage } = firebase;
 const db = firebase.firestore(app);
 db.settings({ timestampsInSnapshots: true });
-const provider = new firebase.auth.GoogleAuthProvider();
 
 const validateStringArgsExist = (args = []) => {
   return args.map(arg => ow(arg, ow.string.nonEmpty));
 };
 
 class FirebaseClient {
-  login() {
-    console.log('Logging in...');
-    return auth()
-      .signInWithRedirect(provider)
-      .then(result => {
-        const { user } = result;
-
-        console.log({ user });
-        this.createOrUpdateUser(user);
-      })
-      .catch(error => {
-        const { code, message, email, credential } = error;
-
-        console.error({ code, message, email, credential });
-      });
-  }
-
   logout() {
     return auth().signOut();
   }
@@ -67,7 +49,7 @@ class FirebaseClient {
       });
   }
 
-  createBoard({ name, uid, description = '' }) {
+  createBoard(uid, { name, description = '' }) {
     validateStringArgsExist([name, uid]);
 
     return db.collection(BOARDS).add({
@@ -78,6 +60,13 @@ class FirebaseClient {
         [uid]: true
       }
     });
+  }
+
+  deleteBoard(id) {
+    return db
+      .collection(BOARDS)
+      .doc(id)
+      .delete();
   }
 
   getBoard(id) {
@@ -107,7 +96,6 @@ class FirebaseClient {
       error: this.handleImageUploadError,
       complete: async () => {
         const referenceUrl = await ref.getDownloadURL();
-        console.log({ referenceUrl });
 
         const newReference = db
           .collection(BOARDS)

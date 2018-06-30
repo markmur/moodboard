@@ -12,8 +12,9 @@ import NewBoard from './pages/NewBoard';
 import Protected from './containers/Protected';
 
 const Content = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   padding: 0 2em;
+  margin: auto;
 `;
 
 class App extends Component {
@@ -22,7 +23,7 @@ class App extends Component {
       <ThemeProvider theme={theme}>
         <Provider>
           <Switch>
-            <Redirect exact from="/" to="/boards/1" />
+            <Redirect exact from="/" to="/boards" />
             <Route path="/login" component={Login} />
 
             <Protected>
