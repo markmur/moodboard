@@ -5,13 +5,13 @@ import { Consumer } from '../AuthProvider';
 import firebase from '../firebase';
 
 const Container = styled.div`
-  max-width: 340px;
+  max-width: 500px;
   margin: auto;
 `;
 
 const Label = styled.label`
   display: block;
-  color: blue;
+  color: black;
   font-weight: bold;
   font-size: 13px;
   margin-bottom: 8px;
@@ -113,18 +113,18 @@ class NewBoard extends Component {
         <form autoComplete="off" onSubmit={this.handleSubmit}>
           <div>
             <Label htmlFor="name">Name</Label>
-            <Input name="name" type="text" placeholder="Board Name" />
             {this.renderErrorMessage('name')}
+            <Input name="name" type="text" placeholder="Board Name" />
           </div>
 
           <div>
             <Label htmlFor="description">Description (Optional)</Label>
+            {this.renderErrorMessage('description')}
             <Textarea
               name="description"
               type="text"
               placeholder="Description"
             />
-            {this.renderErrorMessage('description')}
           </div>
 
           <SubmitButton type="submit" value="Create Board" />

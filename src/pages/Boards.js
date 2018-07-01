@@ -2,10 +2,27 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Flex, Box } from 'grid-styled';
+import styled from 'styled-components';
+import { Trash } from '../icons';
 import { Consumer } from '../AuthProvider';
 import firebase, { db } from '../firebase';
 
 import Button from '../components/Button';
+
+const Board = styled(Flex).attrs({
+  justify: 'space-between',
+  align: 'center',
+  p: 4
+})`
+  border: 1px solid ${p => p.theme.colors.gray};
+  background: white;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.05);
+  ${p => p.theme.borderRadius};
+`;
+
+const Description = styled.p`
+  color: ${p => p.theme.colors.gray};
+`;
 
 class Boards extends Component {
   state = {
@@ -35,35 +52,23 @@ class Boards extends Component {
     return (
       <div>
         <Flex justify="space-between" align="center">
-          <h3>My Boards ({this.state.boards.length})</h3>
+          <h3>My Boards</h3>
           <Button>
-            <Link to="/boards/new">New Board</Link>
+            <Link to="/boards/new">Create Board</Link>
           </Button>
         </Flex>
 
-        <Flex flexWrap="wrap" py={4}>
+        <Flex flexWrap="wrap" py={4} mx={-3}>
           {this.state.boards.map(board => (
-            <Box key={board.id} width={[1, 1 / 2, 1 / 3]} p={2}>
-              <Box
-                p={4}
-                style={{
-                  border: '1px solid #ddd',
-                  background: 'white',
-                  borderRadius: 3
-                }}
-              >
+            <Box key={board.id} mb={3} mx={0} px={3} width={[1, 1 / 2, 1 / 3]}>
+              <Board>
                 <Link to={`/boards/${board.id}`}>
                   <h2>{board.name}</h2>
-                  <p>{board.description}</p>
+                  <Description>{board.description}</Description>
                 </Link>
 
-                <button
-                  type="button"
-                  onClick={() => firebase.deleteBoard(board.id)}
-                >
-                  Delete
-                </button>
-              </Box>
+                <Trash onClick={() => firebase.deleteBoard(board.id)} />
+              </Board>
             </Box>
           ))}
         </Flex>

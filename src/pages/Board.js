@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-rnd';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
+import AutosizeInput from 'react-input-autosize';
+import { Flex, Box } from 'grid-styled';
 import firebase, { db } from '../firebase';
+import { Avatar } from '../styles';
+import Button from '../components/Button';
 
 const StyledDropzone = styled(Dropzone)`
   position: fixed;
@@ -20,27 +24,46 @@ const BoardContainer = styled.div`
   min-height: 300vh;
 `;
 
-const BoardName = styled.input`
-  display: block;
-  background: transparent;
-  border: none;
-  font-size: 5rem;
-  font-weight: bolder;
-  outline: none;
+const BoardName = styled(AutosizeInput).attrs({
+  style: {
+    display: 'block'
+  }
+})`
+  input {
+    display: block;
+    background: transparent;
+    border: none;
+    font-size: 5rem;
+    font-weight: bolder;
+    outline: none;
+  }
 `;
 
 const BoardDescription = BoardName.extend`
-  font-size: 1.35em;
-  font-weight: normal;
-  color: #333;
+  input {
+    font-size: 1.35em;
+    font-weight: normal;
+    color: ${p => p.theme.colors.gray};
+  }
+`;
+
+const Caption = BoardName.extend`
+  input {
+    font-size: 15px;
+    font-weight: normal;
+    color: #555;
+    text-align: center;
+  }
 `;
 
 class Board extends Component {
   state = {
     loading: true,
+    selected: {},
     name: '',
     description: '',
-    images: []
+    images: [],
+    profiles: []
   };
 
   get boardId() {
@@ -48,25 +71,38 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    firebase.getBoard(this.boardId);
-
     const boardRef = db.collection('boards').doc(this.boardId);
     const imagesRef = db
       .collection('boards')
       .doc(this.boardId)
       .collection('images');
 
-    boardRef.onSnapshot(board => {
-      if (!board) this.props.history.replace('/boards');
+    boardRef.onSnapshot(snapshot => {
+      const board = snapshot.data();
+
+      if (!snapshot || !board) this.props.history.replace('/boards');
+
+      this.getMembers(Object.keys(board.members));
 
       imagesRef.onSnapshot(images => {
         this.setState({
           loading: false,
-          ...board.data(),
+          ...board,
           images: images.docs.map(x => x.data())
         });
       });
     });
+  }
+
+  getMembers(members) {
+    firebase
+      .getBoardMembers(members)
+      .then(profiles => {
+        this.setState({ profiles });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   onDrop = acceptedFiles => {
@@ -122,20 +158,32 @@ class Board extends Component {
 
   render() {
     return (
-      <BoardContainer>
-        <BoardName
-          defaultValue={this.state.name}
-          placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
-          onChange={this.handleChange('name')}
-          onBlur={this.handleBlur('name')}
-        />
+      <BoardContainer onClick={() => this.setState({ selected: {} })}>
+        <Flex justify="space-between" align="center">
+          <div>
+            <BoardName
+              defaultValue={this.state.name}
+              placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
+              onChange={this.handleChange('name')}
+              onBlur={this.handleBlur('name')}
+            />
 
-        <BoardDescription
-          placeholder={this.state.loading ? '' : 'No description'}
-          onChange={this.handleChange('description')}
-          onBlur={this.handleBlur('description')}
-          value={this.state.description}
-        />
+            <BoardDescription
+              placeholder={this.state.loading ? '' : 'No description'}
+              onChange={this.handleChange('description')}
+              onBlur={this.handleBlur('description')}
+              value={this.state.description}
+            />
+          </div>
+          <Flex justify="space-between" align="center">
+            <div>
+              {this.state.profiles.map(user => (
+                <Avatar key={user.email} size={50} src={user.photoURL} />
+              ))}
+            </div>
+            <Button>Share</Button>
+          </Flex>
+        </Flex>
 
         <StyledDropzone
           disableClick
@@ -151,12 +199,23 @@ class Board extends Component {
             key={image.id}
             lockAspectRatio
             default={{ x: image.position.x, y: image.position.y, width: 400 }}
-            style={{
-              border: 'solid 1px #ddd'
-            }}
             onDragStop={this.handleDragEnd(image.id)}
           >
-            <img draggable="false" src={image.href} />
+            <img
+              style={{
+                border:
+                  this.state.selected.id === image.id
+                    ? '2px solid blue'
+                    : '1px solid #ddd'
+              }}
+              onClick={() => {
+                this.setState({
+                  selected: image
+                });
+              }}
+              draggable="false"
+              src={image.href}
+            />
           </Draggable>
         ))}
       </BoardContainer>

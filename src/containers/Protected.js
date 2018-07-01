@@ -9,8 +9,6 @@ class Protected extends Component {
     return (
       <Consumer>
         {({ authenticated, loading }) => {
-          if (loading) return null;
-
           if (authenticated && !loading) {
             console.log('Authenticated, displaying content.');
             return children;

@@ -13,7 +13,8 @@ body {
   letter-spacing: 0.85px;
 }
 
-input {
+input,
+textarea {
   font-family: var(--font);
 }
 
@@ -48,6 +49,7 @@ h4,
 h5,
 h6 {
   margin: 0;
+  margin-bottom: 0.2em;
 }
 
 p {

@@ -12,8 +12,7 @@ import NewBoard from './pages/NewBoard';
 import Protected from './containers/Protected';
 
 const Content = styled.div`
-  max-width: 1400px;
-  padding: 0 2em;
+  padding: 0 ${p => p.theme.contentPadding};
   margin: auto;
 `;
 

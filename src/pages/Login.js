@@ -41,6 +41,7 @@ class Login extends Component {
       callbacks: {
         signInSuccessWithAuthResult: authResult => {
           const { user } = authResult;
+          console.log('signInSuccessWithAuthResult', user);
 
           firebase.createOrUpdateUser(user).then(() => {
             this.props.history.replace('/boards');
@@ -64,7 +65,7 @@ class Login extends Component {
         <Description>Create beatiful moodboards.</Description>
 
         {this.state.loading && <div>Loading...</div>}
-        <div id="firebaseui-auth-container" />
+        {!this.state.loading && <div id="firebaseui-auth-container" />}
       </Flex>
     );
   }

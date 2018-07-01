@@ -4,10 +4,11 @@ import { Flex } from 'grid-styled';
 import styled from 'styled-components';
 import { Consumer } from '../AuthProvider';
 import firebase from '../firebase';
+import { Avatar } from '../styles';
 
 const Nav = styled.header`
   background: white;
-  padding: 1em 2em;
+  padding: 0.75em ${p => p.theme.contentPadding};
   margin-bottom: 2em;
 
   h1 {
@@ -18,16 +19,14 @@ const Nav = styled.header`
     display: flex;
     align-items: center;
 
+    li {
+      padding-left: 2em;
+    }
+
     li a {
-      padding: 0.5em 1em;
+      padding: 0.5em 0;
     }
   }
-`;
-
-const Avatar = styled.img.attrs({
-  width: 35
-})`
-  border-radius: 50%;
 `;
 
 const Header = () => (
@@ -45,9 +44,6 @@ const Header = () => (
             authenticated && (
               <Fragment>
                 <li>
-                  <Avatar src={user.photoURL} />
-                </li>
-                <li>
                   <a
                     type="button"
                     style={{ cursor: 'pointer' }}
@@ -55,6 +51,9 @@ const Header = () => (
                   >
                     Logout
                   </a>
+                </li>
+                <li>
+                  <Avatar src={user.photoURL} />
                 </li>
               </Fragment>
             )

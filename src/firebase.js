@@ -1,5 +1,4 @@
 import firebase from 'firebase/app';
-import ow from 'ow';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
@@ -27,8 +26,8 @@ const { auth, storage } = firebase;
 const db = firebase.firestore(app);
 db.settings({ timestampsInSnapshots: true });
 
-const validateStringArgsExist = (args = []) => {
-  return args.map(arg => ow(arg, ow.string.nonEmpty));
+const handleError = name => error => {
+  console.log(name, error);
 };
 
 class FirebaseClient {
@@ -37,8 +36,6 @@ class FirebaseClient {
   }
 
   createOrUpdateUser({ uid, displayName, photoURL, email }) {
-    validateStringArgsExist([uid, displayName, email]);
-
     return db
       .collection(USERS)
       .doc(uid)
@@ -46,20 +43,38 @@ class FirebaseClient {
         displayName,
         photoURL,
         email
-      });
+      })
+      .catch(handleError('createOrUpdateUser'));
+  }
+
+  getBoardMembers(members = []) {
+    return Promise.all(
+      members.map(id =>
+        db
+          .collection(USERS)
+          .where(firebase.firestore.FieldPath.documentId(), '==', id)
+          .get()
+      )
+    )
+      .then(results => {
+        return results.map(result => result.docs[0].data());
+      })
+      .catch(handleError('getBoardMembers'));
   }
 
   createBoard(uid, { name, description = '' }) {
-    validateStringArgsExist([name, uid]);
-
-    return db.collection(BOARDS).add({
-      name,
-      description,
-      createdBy: uid,
-      members: {
-        [uid]: true
-      }
-    });
+    return db
+      .collection(BOARDS)
+      .add({
+        name,
+        description,
+        createdBy: uid,
+        public: false,
+        members: {
+          [uid]: true
+        }
+      })
+      .catch(handleError('createBoard'));
   }
 
   deleteBoard(id) {
@@ -70,7 +85,10 @@ class FirebaseClient {
   }
 
   getBoard(id) {
-    return db.collection(BOARDS).get(id);
+    return db
+      .collection(BOARDS)
+      .get(id)
+      .catch(handleError('getBoard'));
   }
 
   uploadImage(blob, meta) {
@@ -116,6 +134,14 @@ class FirebaseClient {
     });
   }
 
+  removeImageFromBoard(boardId, imageId) {
+    return db
+      .collection(`${BOARDS}/${boardId}/${IMAGES}`)
+      .doc(imageId)
+      .delete()
+      .catch(handleError('removeImageFromBoard'));
+  }
+
   updateImagePosition(boardId, imageId, { x, y }) {
     return db
       .collection(`${BOARDS}/${boardId}/${IMAGES}`)
@@ -125,7 +151,8 @@ class FirebaseClient {
           x,
           y
         }
-      });
+      })
+      .catch(handleError('updateImagePosition'));
   }
 }
 
