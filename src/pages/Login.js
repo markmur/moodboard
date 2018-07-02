@@ -43,14 +43,12 @@ class Login extends Component {
         auth.GithubAuthProvider.PROVIDER_ID,
         auth.TwitterAuthProvider.PROVIDER_ID
       ],
-      signInSuccessUrl: '/boards/G6Rm8lQuZkDSHXthu4Mn',
+      signInSuccessUrl: this.props.lastLocation.pathname,
       callbacks: {
-        signInSuccessWithAuthResult: authResult => {
+        signInSuccessWithAuthResult: async authResult => {
           const { user } = authResult;
 
-          firebase.createOrUpdateUser(user).then(() => {
-            this.props.history.replace('/boards/G6Rm8lQuZkDSHXthu4Mn');
-          });
+          await firebase.createOrUpdateUser(user);
         },
         uiShown: () => {
           this.setState({ loading: false });
@@ -84,9 +82,6 @@ Login.propTypes = {
   className: PropTypes.string,
   lastLocation: PropTypes.shape({
     pathname: PropTypes.string
-  }),
-  history: PropTypes.shape({
-    replace: PropTypes.func
   }).isRequired
 };
 

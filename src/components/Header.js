@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Flex } from 'grid-styled';
 import styled from 'styled-components';
@@ -24,7 +25,7 @@ const Nav = styled.header`
   }
 `;
 
-const Header = () => (
+const Header = ({ history }) => (
   <Nav>
     <Flex flexWrap={false} justify="space-between" align="center">
       <Logo />
@@ -41,9 +42,7 @@ const Header = () => (
                     type="button"
                     style={{ cursor: 'pointer' }}
                     onClick={() =>
-                      firebase
-                        .logout()
-                        .then(() => this.props.history.replace('/login'))
+                      firebase.logout().then(() => history.replace('/login'))
                     }
                   >
                     Logout
@@ -60,5 +59,11 @@ const Header = () => (
     </Flex>
   </Nav>
 );
+
+Header.propTypes = {
+  history: PropTypes.shape({
+    replace: PropTypes.func
+  }).isRequired
+};
 
 export default withRouter(Header);

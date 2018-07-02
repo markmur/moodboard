@@ -66,6 +66,9 @@ FirebaseAuthProvider.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }).isRequired,
+  lastLocation: PropTypes.shape({
+    pathname: PropTypes.string
+  }).isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired
   }).isRequired
