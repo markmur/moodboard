@@ -9,11 +9,15 @@ const Button = styled(props => (
 ))`
   font-size: 0.8em;
   font-weight: bold;
-  padding: 1em 2em;
   text-transform: uppercase;
-  background: black;
+  background: blue;
   color: white;
   cursor: pointer;
+
+  a {
+    display: block;
+    padding: 1em 2em;
+  }
 
   &:hover {
     background: rgba(0, 0, 0, 0.8);

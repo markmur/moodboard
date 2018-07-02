@@ -19,8 +19,10 @@
     "react-rnd": "^8.0.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
+    "react-switch": "^3.0.4",
     "serve": "^9.1.0",
-    "styled-components": "^3.3.3"
+    "styled-components": "^3.3.3",
+    "styled-system": "^2.3.2"
   },
   "scripts": {
     "dev": "react-scripts start",
@@ -28,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "deploy": "yarn build && firebase deploy"
   },
   "lint-staged": {
     "src/**/*.js": [

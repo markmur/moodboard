@@ -1,19 +1,14 @@
 import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Flex } from 'grid-styled';
 import styled from 'styled-components';
 import { Consumer } from '../AuthProvider';
 import firebase from '../firebase';
-import { Avatar } from '../styles';
+import { Avatar, Logo } from '../styles';
 
 const Nav = styled.header`
   background: white;
   padding: 0.75em ${p => p.theme.contentPadding};
-  margin-bottom: 2em;
-
-  h1 {
-    font-weight: bolder;
-  }
 
   ul {
     display: flex;
@@ -32,9 +27,7 @@ const Nav = styled.header`
 const Header = () => (
   <Nav>
     <Flex flexWrap={false} justify="space-between" align="center">
-      <Link to="/">
-        <h1>Mood.</h1>
-      </Link>
+      <Logo />
       <ul>
         <li>
           <Link to="/boards">My Boards</Link>
@@ -47,7 +40,11 @@ const Header = () => (
                   <a
                     type="button"
                     style={{ cursor: 'pointer' }}
-                    onClick={firebase.logout}
+                    onClick={() =>
+                      firebase
+                        .logout()
+                        .then(() => this.props.history.replace('/login'))
+                    }
                   >
                     Logout
                   </a>
@@ -64,4 +61,4 @@ const Header = () => (
   </Nav>
 );
 
-export default Header;
+export default withRouter(Header);

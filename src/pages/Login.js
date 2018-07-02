@@ -4,6 +4,7 @@ import { Flex } from 'grid-styled';
 import styled, { css } from 'styled-components';
 import * as firebaseui from 'firebaseui';
 import firebase, { auth } from '../firebase';
+import { Logo } from '../styles';
 import 'firebaseui/dist/firebaseui.css';
 
 const loginStyles = css`
@@ -13,13 +14,9 @@ const loginStyles = css`
   margin: auto;
 `;
 
-const Heading = styled.h1`
-  font-size: 7rem;
-  font-weight: bolder;
-`;
-
 const Description = styled.p`
-  color: #333;
+  color: #222;
+  font-size: 17px;
   margin-bottom: 2em;
 `;
 
@@ -37,14 +34,20 @@ class Login extends Component {
 
     ui.start('#firebaseui-auth-container', {
       signInFlow: 'popup',
-      signInOptions: [auth.GoogleAuthProvider.PROVIDER_ID],
+      signInOptions: [
+        auth.GoogleAuthProvider.PROVIDER_ID,
+        auth.GithubAuthProvider.PROVIDER_ID,
+        auth.TwitterAuthProvider.PROVIDER_ID
+      ],
       callbacks: {
         signInSuccessWithAuthResult: authResult => {
           const { user } = authResult;
           console.log('signInSuccessWithAuthResult', user);
 
           firebase.createOrUpdateUser(user).then(() => {
-            this.props.history.replace('/boards');
+            this.props.history.replace({
+              pathname: '/boards'
+            });
           });
         },
         uiShown: () => {
@@ -61,11 +64,11 @@ class Login extends Component {
         justify="center"
         className={this.props.className}
       >
-        <Heading>Mood.</Heading>
+        <Logo mb={0} fontSize="8rem" />
         <Description>Create beatiful moodboards.</Description>
 
         {this.state.loading && <div>Loading...</div>}
-        {!this.state.loading && <div id="firebaseui-auth-container" />}
+        <div id="firebaseui-auth-container" />
       </Flex>
     );
   }

@@ -5,8 +5,9 @@ import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import AutosizeInput from 'react-input-autosize';
 import { Flex, Box } from 'grid-styled';
+import Switch from 'react-switch';
 import firebase, { db } from '../firebase';
-import { Avatar } from '../styles';
+import { Avatars, Content, Label } from '../styles';
 import Button from '../components/Button';
 
 const StyledDropzone = styled(Dropzone)`
@@ -18,6 +19,11 @@ const StyledDropzone = styled(Dropzone)`
   width: 100%;
   height: 100vh;
   z-index: -1;
+`;
+
+const Header = styled.div`
+  padding: 0 0 3em;
+  background: white;
 `;
 
 const BoardContainer = styled.div`
@@ -41,7 +47,7 @@ const BoardName = styled(AutosizeInput).attrs({
 
 const BoardDescription = BoardName.extend`
   input {
-    font-size: 1.35em;
+    font-size: 1.45em;
     font-weight: normal;
     color: ${p => p.theme.colors.gray};
   }
@@ -51,8 +57,9 @@ const Caption = BoardName.extend`
   input {
     font-size: 15px;
     font-weight: normal;
-    color: #555;
+    color: #333;
     text-align: center;
+    font-family: var(--logo-font);
   }
 `;
 
@@ -159,31 +166,48 @@ class Board extends Component {
   render() {
     return (
       <BoardContainer onClick={() => this.setState({ selected: {} })}>
-        <Flex justify="space-between" align="center">
-          <div>
-            <BoardName
-              defaultValue={this.state.name}
-              placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
-              onChange={this.handleChange('name')}
-              onBlur={this.handleBlur('name')}
-            />
+        <Header>
+          <Content>
+            <Flex justify="space-between" align="center">
+              <div>
+                <BoardName
+                  defaultValue={this.state.name}
+                  placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
+                  onChange={this.handleChange('name')}
+                  onBlur={this.handleBlur('name')}
+                />
 
-            <BoardDescription
-              placeholder={this.state.loading ? '' : 'No description'}
-              onChange={this.handleChange('description')}
-              onBlur={this.handleBlur('description')}
-              value={this.state.description}
-            />
-          </div>
-          <Flex justify="space-between" align="center">
-            <div>
-              {this.state.profiles.map(user => (
-                <Avatar key={user.email} size={50} src={user.photoURL} />
-              ))}
-            </div>
-            <Button>Share</Button>
-          </Flex>
-        </Flex>
+                <BoardDescription
+                  placeholder={this.state.loading ? '' : 'No description'}
+                  onChange={this.handleChange('description')}
+                  onBlur={this.handleBlur('description')}
+                  value={this.state.description}
+                />
+              </div>
+              <Flex justify="space-between" align="center">
+                <Box mr={5}>
+                  <Avatars profiles={this.state.profiles} size={40} />
+                </Box>
+                <Box mr={3}>
+                  <Label>Public</Label>
+                  <Switch
+                    height={23}
+                    width={55}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    checked={this.state.public}
+                    offColor="#ddd"
+                    onColor="#0087ff"
+                    onChange={val => this.updateBoard('public', Boolean(val))}
+                  />
+                </Box>
+                <Button>
+                  <a>Share</a>
+                </Button>
+              </Flex>
+            </Flex>
+          </Content>
+        </Header>
 
         <StyledDropzone
           disableClick
@@ -194,30 +218,34 @@ class Board extends Component {
           }}
         />
 
-        {this.state.images.map(image => (
-          <Draggable
-            key={image.id}
-            lockAspectRatio
-            default={{ x: image.position.x, y: image.position.y, width: 400 }}
-            onDragStop={this.handleDragEnd(image.id)}
-          >
-            <img
-              style={{
-                border:
-                  this.state.selected.id === image.id
-                    ? '2px solid blue'
-                    : '1px solid #ddd'
-              }}
-              onClick={() => {
-                this.setState({
-                  selected: image
-                });
-              }}
-              draggable="false"
-              src={image.href}
-            />
-          </Draggable>
-        ))}
+        <Content>
+          {this.state.images.map(image => (
+            <Draggable
+              key={image.id}
+              lockAspectRatio
+              default={{ x: image.position.x, y: image.position.y, width: 400 }}
+              onDragStop={this.handleDragEnd(image.id)}
+            >
+              <div>
+                <img
+                  style={{
+                    border:
+                      this.state.selected.id === image.id
+                        ? '2px solid blue'
+                        : '1px solid #ddd'
+                  }}
+                  onClick={() => {
+                    this.setState({
+                      selected: image
+                    });
+                  }}
+                  draggable="false"
+                  src={image.href}
+                />
+              </div>
+            </Draggable>
+          ))}
+        </Content>
       </BoardContainer>
     );
   }

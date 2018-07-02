@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Route, Redirect, Switch } from 'react-router-dom';
-import styled, { ThemeProvider } from 'styled-components';
+import { Route, Redirect, Switch, withRouter } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 import { Provider } from './AuthProvider';
 import theme from './theme';
 
@@ -10,11 +10,6 @@ import Board from './pages/Board';
 import Boards from './pages/Boards';
 import NewBoard from './pages/NewBoard';
 import Protected from './containers/Protected';
-
-const Content = styled.div`
-  padding: 0 ${p => p.theme.contentPadding};
-  margin: auto;
-`;
 
 class App extends Component {
   render() {
@@ -29,13 +24,13 @@ class App extends Component {
               <Route path="/">
                 <div>
                   <Header />
-                  <Content>
+                  <div>
                     <Switch>
                       <Route exact path="/boards" component={Boards} />
                       <Route exact path="/boards/new" component={NewBoard} />
                       <Route exact path="/boards/:id" component={Board} />
                     </Switch>
-                  </Content>
+                  </div>
                 </div>
               </Route>
             </Protected>
@@ -46,4 +41,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);

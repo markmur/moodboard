@@ -26,6 +26,8 @@ const { auth, storage } = firebase;
 const db = firebase.firestore(app);
 db.settings({ timestampsInSnapshots: true });
 
+window.db = db;
+
 const handleError = name => error => {
   console.log(name, error);
 };
@@ -75,6 +77,15 @@ class FirebaseClient {
         }
       })
       .catch(handleError('createBoard'));
+  }
+
+  updateBoad(id, field, value) {
+    return db
+      .collection(BOARDS)
+      .doc(id)
+      .update({
+        [field]: value
+      });
   }
 
   deleteBoard(id) {

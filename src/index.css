@@ -1,8 +1,9 @@
 :root {
   --font: 'Dosis', sans-serif;
+  --logo-font: 'Nanum Pen Script', serif;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Dosis:400,700');
+@import url('https://fonts.googleapis.com/css?family=Dosis:400,700|Nanum+Pen+Script');
 
 body {
   margin: 0;
