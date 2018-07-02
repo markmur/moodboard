@@ -9,6 +9,7 @@ import Switch from 'react-switch';
 import firebase, { db } from '../firebase';
 import { Avatars, Content, Label } from '../styles';
 import Button from '../components/Button';
+import BackgroundImage from '../images/pattern.png';
 
 const StyledDropzone = styled(Dropzone)`
   position: fixed;
@@ -26,7 +27,11 @@ const Header = styled.div`
   background: white;
 `;
 
-const BoardContainer = styled.div`
+const BoardContainer = styled.div.attrs({
+  style: {
+    backgroundImage: `url(${BackgroundImage})`
+  }
+})`
   min-height: 300vh;
 `;
 
@@ -185,7 +190,7 @@ class Board extends Component {
                 />
               </div>
               <Flex justify="space-between" align="center">
-                <Box mr={5}>
+                <Box mr={4}>
                   <Avatars profiles={this.state.profiles} size={40} />
                 </Box>
                 <Box mr={3} width="70px">

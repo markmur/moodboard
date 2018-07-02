@@ -10,6 +10,7 @@ import { Avatar, Logo } from '../styles';
 const Nav = styled.header`
   background: white;
   padding: 0.75em ${p => p.theme.contentPadding};
+  height: ${p => p.theme.headerHeight}px;
 
   ul {
     display: flex;

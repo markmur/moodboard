@@ -6,6 +6,7 @@ import { Provider } from './AuthProvider';
 import theme from './theme';
 
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Login from './pages/Login';
 import Board from './pages/Board';
 import Boards from './pages/Boards';
@@ -33,6 +34,7 @@ class App extends Component {
                         <Route exact path="/boards/:id" component={Board} />
                       </Switch>
                     </div>
+                    <Footer />
                   </div>
                 </Route>
               </Protected>

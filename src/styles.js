@@ -31,6 +31,8 @@ export const Container = styled.div`
 export const Content = styled.div`
   padding: 0 ${p => p.theme.contentPadding};
   margin: auto;
+
+  ${p => (p.minHeight === true ? `min-height: ${p.theme.contentHeight}` : '')};
   ${space};
   ${color};
   ${size};

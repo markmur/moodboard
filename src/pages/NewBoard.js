@@ -70,7 +70,7 @@ class NewBoard extends Component {
 
   render() {
     return (
-      <Content height="90vh" bg="white">
+      <Content minHeight bg="white">
         <Container py={5} width={500}>
           <Box mb={4}>
             <h1>Create New Board</h1>

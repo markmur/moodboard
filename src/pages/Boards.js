@@ -82,7 +82,7 @@ class Boards extends Component {
 
   render() {
     return (
-      <Content height="100vh" pt={4} bg="white">
+      <Content minHeight pt={4} bg="white">
         <Flex justify="space-between" align="center">
           <h2>My Boards</h2>
           <Button>
