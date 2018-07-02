@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Switch, withRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
+import { LastLocationProvider } from 'react-router-last-location';
 import { Provider } from './AuthProvider';
 import theme from './theme';
 
@@ -14,29 +15,31 @@ import Protected from './containers/Protected';
 class App extends Component {
   render() {
     return (
-      <ThemeProvider theme={theme}>
-        <Provider>
-          <Switch>
-            <Redirect exact from="/" to="/boards" />
-            <Route path="/login" component={Login} />
+      <LastLocationProvider>
+        <ThemeProvider theme={theme}>
+          <Provider>
+            <Switch>
+              <Redirect exact from="/" to="/boards" />
+              <Route path="/login" component={Login} />
 
-            <Protected>
-              <Route path="/">
-                <div>
-                  <Header />
+              <Protected>
+                <Route path="/">
                   <div>
-                    <Switch>
-                      <Route exact path="/boards" component={Boards} />
-                      <Route exact path="/boards/new" component={NewBoard} />
-                      <Route exact path="/boards/:id" component={Board} />
-                    </Switch>
+                    <Header />
+                    <div>
+                      <Switch>
+                        <Route exact path="/boards" component={Boards} />
+                        <Route exact path="/boards/new" component={NewBoard} />
+                        <Route exact path="/boards/:id" component={Board} />
+                      </Switch>
+                    </div>
                   </div>
-                </div>
-              </Route>
-            </Protected>
-          </Switch>
-        </Provider>
-      </ThemeProvider>
+                </Route>
+              </Protected>
+            </Switch>
+          </Provider>
+        </ThemeProvider>
+      </LastLocationProvider>
     );
   }
 }

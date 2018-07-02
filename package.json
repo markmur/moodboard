@@ -18,6 +18,7 @@
     "react-resizable": "^1.7.5",
     "react-rnd": "^8.0.1",
     "react-router-dom": "^4.3.1",
+    "react-router-last-location": "^1.1.0",
     "react-scripts": "1.1.4",
     "react-switch": "^3.0.4",
     "serve": "^9.1.0",

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Flex } from 'grid-styled';
+import { withRouter } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { withLastLocation } from 'react-router-last-location';
 import * as firebaseui from 'firebaseui';
 import firebase, { auth } from '../firebase';
 import { Logo } from '../styles';
@@ -32,6 +34,8 @@ class Login extends Component {
       ui = new firebaseui.auth.AuthUI(auth());
     }
 
+    console.log(this.props.lastLocation.pathname);
+
     ui.start('#firebaseui-auth-container', {
       signInFlow: 'popup',
       signInOptions: [
@@ -39,15 +43,13 @@ class Login extends Component {
         auth.GithubAuthProvider.PROVIDER_ID,
         auth.TwitterAuthProvider.PROVIDER_ID
       ],
+      signInSuccessUrl: '/boards/G6Rm8lQuZkDSHXthu4Mn',
       callbacks: {
         signInSuccessWithAuthResult: authResult => {
           const { user } = authResult;
-          console.log('signInSuccessWithAuthResult', user);
 
           firebase.createOrUpdateUser(user).then(() => {
-            this.props.history.replace({
-              pathname: '/boards'
-            });
+            this.props.history.replace('/boards/G6Rm8lQuZkDSHXthu4Mn');
           });
         },
         uiShown: () => {
@@ -80,9 +82,12 @@ Login.defaultProps = {
 
 Login.propTypes = {
   className: PropTypes.string,
+  lastLocation: PropTypes.shape({
+    pathname: PropTypes.string
+  }),
   history: PropTypes.shape({
     replace: PropTypes.func
   }).isRequired
 };
 
-export default styled(Login)(loginStyles);
+export default withLastLocation(withRouter(styled(Login)(loginStyles)));

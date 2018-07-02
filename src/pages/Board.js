@@ -188,11 +188,11 @@ class Board extends Component {
                 <Box mr={5}>
                   <Avatars profiles={this.state.profiles} size={40} />
                 </Box>
-                <Box mr={3}>
+                <Box mr={3} width="70px">
                   <Label>Public</Label>
                   <Switch
                     height={23}
-                    width={55}
+                    width={54}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     checked={this.state.public}

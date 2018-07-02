@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { withLastLocation } from 'react-router-last-location';
 import { auth } from './firebase';
 
 const defaultAuthContext = {
@@ -36,7 +37,9 @@ class FirebaseAuthProvider extends Component {
   redirect() {
     const { location, history } = this.props;
     const route =
-      location.pathname === '/login' ? '/boards' : location.pathname;
+      location.pathname === '/login'
+        ? this.props.lastLocation.pathname
+        : location.pathname;
 
     return history.replace(route);
   }
@@ -70,4 +73,4 @@ FirebaseAuthProvider.propTypes = {
 
 export const { Consumer } = AuthContext;
 
-export const Provider = withRouter(FirebaseAuthProvider);
+export const Provider = withLastLocation(withRouter(FirebaseAuthProvider));
