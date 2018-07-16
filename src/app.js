@@ -5,6 +5,7 @@ import { LastLocationProvider } from 'react-router-last-location';
 import { Provider } from './AuthProvider';
 import theme from './theme';
 
+// Components
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './pages/Login';

@@ -11,15 +11,40 @@ import { Avatars, Content, Label } from '../styles';
 import Button from '../components/Button';
 import BackgroundImage from '../images/pattern.png';
 
-const StyledDropzone = styled(Dropzone)`
+const Overlay = styled.div.attrs({
+  children: 'Drop files to upload'
+})`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-size: 3rem;
+  padding: 2.5em 0;
+  color: rgb(102, 51, 153);
+  background: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  border: 2em solid rgba(102, 51, 153, 0.3);
+`;
+
+const StyledDropzone = styled(Dropzone).attrs({
+  activeClassName: 'active',
+  disableClick: true
+})`
   position: fixed;
-  top: 103px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
   height: 100vh;
-  z-index: -1;
+
+  &.active {
+    z-index: 100;
+  }
 `;
 
 const Header = styled.div`
@@ -55,16 +80,6 @@ const BoardDescription = BoardName.extend`
     font-size: 1.45em;
     font-weight: normal;
     color: ${p => p.theme.colors.gray};
-  }
-`;
-
-const Caption = BoardName.extend`
-  input {
-    font-size: 15px;
-    font-weight: normal;
-    color: #333;
-    text-align: center;
-    font-family: var(--logo-font);
   }
 `;
 
@@ -214,14 +229,9 @@ class Board extends Component {
           </Content>
         </Header>
 
-        <StyledDropzone
-          disableClick
-          onDrop={this.onDrop}
-          style={{ position: 'fixed' }}
-          activeStyle={{
-            border: '5em solid rgba(102, 51, 153, 0.3)'
-          }}
-        />
+        <StyledDropzone style={{ position: 'fixed' }} onDrop={this.onDrop}>
+          {({ isDragActive }) => (isDragActive ? <Overlay /> : null)}
+        </StyledDropzone>
 
         <Content>
           {this.state.images.map(image => (

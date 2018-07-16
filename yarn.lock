@@ -1996,6 +1996,14 @@ clean-tag@^1.0.3:
     react ">=16.0.0"
     styled-system ">=1.1 || >=2.0"
 
+clean-tag@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/clean-tag/-/clean-tag-2.0.0.tgz#01681c4f22ea6137dbeace87d2a58204429686fa"
+  dependencies:
+    html-tags "^2.0.0"
+    react ">=16.0.0"
+    styled-system ">=2.0.0 || >=3.0.0"
+
 cli-boxes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-1.0.0.tgz#4fa917c3e59c94a004cd61f8ee509da651687143"
@@ -9359,6 +9367,12 @@ styled-components@^3.3.3:
   resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-2.3.2.tgz#b5dbc7d197b41dd06b80b16e17b52503363a5aac"
   dependencies:
     prop-types "^15.6.0"
+
+"styled-system@>=2.0.0 || >=3.0.0":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-3.0.1.tgz#fde623de598882a8b2272811b88b73f4b9179d8a"
+  dependencies:
+    prop-types "^15.6.2"
 
 stylis-rule-sheet@^0.0.10:
   version "0.0.10"
