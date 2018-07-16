@@ -1,11 +1,11 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/storage';
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+import 'firebase/storage'
 
-const USERS = 'users';
-const BOARDS = 'boards';
-const IMAGES = 'images';
+const USERS = 'users'
+const BOARDS = 'boards'
+const IMAGES = 'images'
 
 const config = {
   apiKey: 'AIzaSyCWRkSFhOVTfGxe4eT_IcvmYFIyMQmn9tA',
@@ -14,27 +14,25 @@ const config = {
   projectId: 'moodboard-b788b',
   storageBucket: 'moodboard-b788b.appspot.com',
   messagingSenderId: '58231872924'
-};
-
-let app;
-
-if (firebase.apps.length <= 0) {
-  app = firebase.initializeApp(config);
 }
 
-const { auth, storage } = firebase;
-const db = firebase.firestore(app);
-db.settings({ timestampsInSnapshots: true });
+let app
 
-window.db = db;
+if (firebase.apps.length <= 0) {
+  app = firebase.initializeApp(config)
+}
+
+const { auth, storage } = firebase
+const db = firebase.firestore(app)
+db.settings({ timestampsInSnapshots: true })
 
 const handleError = name => error => {
-  console.log(name, error);
-};
+  console.log(name, error)
+}
 
 class FirebaseClient {
   logout() {
-    return auth().signOut();
+    return auth().signOut()
   }
 
   createOrUpdateUser({ uid, displayName, photoURL, email }) {
@@ -46,7 +44,7 @@ class FirebaseClient {
         photoURL,
         email
       })
-      .catch(handleError('createOrUpdateUser'));
+      .catch(handleError('createOrUpdateUser'))
   }
 
   getBoardMembers(members = []) {
@@ -59,9 +57,9 @@ class FirebaseClient {
       )
     )
       .then(results => {
-        return results.map(result => result.docs[0].data());
+        return results.map(result => result.docs[0].data())
       })
-      .catch(handleError('getBoardMembers'));
+      .catch(handleError('getBoardMembers'))
   }
 
   createBoard(uid, { name, description = '' }) {
@@ -76,7 +74,7 @@ class FirebaseClient {
           [uid]: true
         }
       })
-      .catch(handleError('createBoard'));
+      .catch(handleError('createBoard'))
   }
 
   updateBoad(id, field, value) {
@@ -85,64 +83,68 @@ class FirebaseClient {
       .doc(id)
       .update({
         [field]: value
-      });
+      })
   }
 
   deleteBoard(id) {
     return db
       .collection(BOARDS)
       .doc(id)
-      .delete();
+      .delete()
   }
 
   getBoard(id) {
     return db
       .collection(BOARDS)
       .get(id)
-      .catch(handleError('getBoard'));
+      .catch(handleError('getBoard'))
   }
 
   uploadImage(blob, meta) {
-    return storage().put(blob, meta);
+    return storage().put(blob, meta)
   }
 
   handleImageUploadError(error) {
-    console.error(error);
+    console.error(error)
   }
 
   handleUploadProgress(snapshot) {
-    const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log(percent + '% done');
+    const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    console.log(percent + '% done')
   }
 
   addImageToBoard(boardId, file, { name }) {
-    const url = `images/${name}`;
-    const ref = storage().ref(url);
-    const upload = ref.put(file);
+    const url = `images/${name}`
+    const ref = storage().ref(url)
+    const upload = ref.put(file)
 
-    upload.on(firebase.storage.TaskEvent.STATE_CHANGED, {
-      next: this.handleUploadProgress,
-      error: this.handleImageUploadError,
-      complete: async () => {
-        const referenceUrl = await ref.getDownloadURL();
+    return new Promise((resolve, reject) => {
+      upload.on(firebase.storage.TaskEvent.STATE_CHANGED, {
+        next: this.handleUploadProgress,
+        error: reject,
+        complete: async () => {
+          const referenceUrl = await ref.getDownloadURL()
 
-        const newReference = db
-          .collection(BOARDS)
-          .doc(boardId)
-          .collection(IMAGES)
-          .doc();
+          const newReference = db
+            .collection(BOARDS)
+            .doc(boardId)
+            .collection(IMAGES)
+            .doc()
 
-        newReference.set({
-          id: newReference.id,
-          name,
-          href: referenceUrl,
-          position: {
-            x: 0,
-            y: 0
-          }
-        });
-      }
-    });
+          newReference
+            .set({
+              id: newReference.id,
+              name,
+              href: referenceUrl,
+              position: {
+                x: 0,
+                y: 0
+              }
+            })
+            .then(resolve)
+        }
+      })
+    })
   }
 
   removeImageFromBoard(boardId, imageId) {
@@ -150,7 +152,7 @@ class FirebaseClient {
       .collection(`${BOARDS}/${boardId}/${IMAGES}`)
       .doc(imageId)
       .delete()
-      .catch(handleError('removeImageFromBoard'));
+      .catch(handleError('removeImageFromBoard'))
   }
 
   updateImagePosition(boardId, imageId, { x, y }) {
@@ -163,12 +165,12 @@ class FirebaseClient {
           y
         }
       })
-      .catch(handleError('updateImagePosition'));
+      .catch(handleError('updateImagePosition'))
   }
 }
 
-const fb = new FirebaseClient();
+const fb = new FirebaseClient()
 
-export default fb;
+export default fb
 
-export { auth, db };
+export { auth, db }

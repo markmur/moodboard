@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Draggable from 'react-rnd';
-import Dropzone from 'react-dropzone';
-import styled from 'styled-components';
-import AutosizeInput from 'react-input-autosize';
-import { Flex, Box } from 'grid-styled';
-import Switch from 'react-switch';
-import firebase, { db } from '../firebase';
-import { Avatars, Content, Label } from '../styles';
-import Button from '../components/Button';
-import BackgroundImage from '../images/pattern.png';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import Draggable from 'react-rnd'
+import Dropzone from 'react-dropzone'
+import styled from 'styled-components'
+import AutosizeInput from 'react-input-autosize'
+import { Flex, Box } from 'grid-styled'
+import Switch from 'react-switch'
+import firebase, { db } from '../services/firebase'
+import { Avatars, Content, Label } from '../styles'
+import Button from '../components/Button'
+import { storePropTypes } from '../prop-types'
 
 const Overlay = styled.div.attrs({
   children: 'Drop files to upload'
 })`
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,14 +28,15 @@ const Overlay = styled.div.attrs({
   background: rgba(255, 255, 255, 0.4);
   text-align: center;
   border: 2em solid rgba(102, 51, 153, 0.3);
-`;
+  z-index: 100;
+`
 
 const StyledDropzone = styled(Dropzone).attrs({
   activeClassName: 'active',
   disableClick: true
 })`
   position: fixed;
-  top: 0;
+  top: 267px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -45,20 +46,17 @@ const StyledDropzone = styled(Dropzone).attrs({
   &.active {
     z-index: 100;
   }
-`;
+`
 
 const Header = styled.div`
+  box-shadow: ${p => p.theme.shadow};
   padding: 0 0 3em;
   background: white;
-`;
+`
 
-const BoardContainer = styled.div.attrs({
-  style: {
-    backgroundImage: `url(${BackgroundImage})`
-  }
-})`
+const BoardContainer = styled.div`
   min-height: 300vh;
-`;
+`
 
 const BoardName = styled(AutosizeInput).attrs({
   style: {
@@ -73,7 +71,7 @@ const BoardName = styled(AutosizeInput).attrs({
     font-weight: bolder;
     outline: none;
   }
-`;
+`
 
 const BoardDescription = BoardName.extend`
   input {
@@ -81,7 +79,7 @@ const BoardDescription = BoardName.extend`
     font-weight: normal;
     color: ${p => p.theme.colors.gray};
   }
-`;
+`
 
 class Board extends Component {
   state = {
@@ -91,71 +89,72 @@ class Board extends Component {
     description: '',
     images: [],
     profiles: []
-  };
+  }
 
   get boardId() {
-    return this.props.match.params.id;
+    return this.props.match.params.id
   }
 
   componentDidMount() {
-    const boardRef = db.collection('boards').doc(this.boardId);
-    const imagesRef = db
-      .collection('boards')
-      .doc(this.boardId)
-      .collection('images');
+    // Todo redirect to /boards if board is not found
 
-    boardRef.onSnapshot(snapshot => {
-      const board = snapshot.data();
+    this.props.store.subscribe('board', this.boardId)
+    this.props.store.subscribe('images', this.boardId)
+  }
 
-      if (!snapshot || !board) this.props.history.replace('/boards');
-
-      this.getMembers(Object.keys(board.members));
-
-      imagesRef.onSnapshot(images => {
-        this.setState({
-          loading: false,
-          ...board,
-          images: images.docs.map(x => x.data())
-        });
-      });
-    });
+  componentWillUnmount() {
+    this.props.store.unsubscribe('board')
+    this.props.store.unsubscribe('images')
   }
 
   getMembers(members) {
     firebase
       .getBoardMembers(members)
       .then(profiles => {
-        this.setState({ profiles });
+        this.setState({ profiles })
       })
       .catch(err => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }
 
-  onDrop = acceptedFiles => {
+  onDrop = (acceptedFiles, rejectedFiles, event) => {
+    this.props.store.setGlobalLoadingState(true)
+
+    const { pageX, pageY } = event.target
+
     this.setState(({ images }) => ({
       images: [
         ...images,
         ...acceptedFiles.map(file => ({
           href: file.preview,
           position: {
-            x: 0,
-            y: 0
+            x: pageX,
+            y: pageY
           }
         }))
       ]
-    }));
+    }))
 
-    acceptedFiles.map(file =>
-      firebase.addImageToBoard(this.boardId, file, {
-        name: file.name
-      })
-    );
-  };
+    const uploads = acceptedFiles.map(file =>
+      firebase
+        .addImageToBoard(this.boardId, file, {
+          name: file.name
+        })
+        .catch(err => {
+          console.log(err)
+          this.props.store.setGlobalLoadingState(false)
+        })
+    )
+
+    Promise.all(uploads).then(() =>
+      this.props.store.setGlobalLoadingState(false)
+    )
+  }
 
   handleDragEnd = imageId => (event, { x, y }) => {
-    firebase.updateImagePosition(this.boardId, imageId, { x, y });
-  };
+    firebase.updateImagePosition(this.boardId, imageId, { x, y })
+  }
 
   updateBoard = (field, value) => {
     try {
@@ -163,27 +162,32 @@ class Board extends Component {
         .doc(this.boardId)
         .update({
           [field]: value
-        });
+        })
     } catch (err) {
-      console.log('Error updating board name', { err });
+      console.log('Error updating board name', { err })
     }
-  };
+  }
 
   handleBlur = field => () => {
-    this.updateBoard(field, this.state[field]);
-  };
+    this.updateBoard(field, this.state[field])
+  }
 
   handleChange = field => event => {
-    const { value } = event.target;
+    const { value } = event.target
 
     if (value) {
       this.setState({
         [field]: value
-      });
+      })
     }
-  };
+  }
 
   render() {
+    const { store } = this.props
+
+    const board = store.board.data
+    const images = store.images.data
+
     return (
       <BoardContainer onClick={() => this.setState({ selected: {} })}>
         <Header>
@@ -191,22 +195,24 @@ class Board extends Component {
             <Flex justify="space-between" align="center">
               <div>
                 <BoardName
-                  defaultValue={this.state.name}
-                  placeholder={this.state.loading ? 'Loading...' : 'Board Name'}
+                  defaultValue={board.name}
+                  placeholder={
+                    store.board.loading ? 'Loading...' : 'Board Name'
+                  }
                   onChange={this.handleChange('name')}
                   onBlur={this.handleBlur('name')}
                 />
 
                 <BoardDescription
-                  placeholder={this.state.loading ? '' : 'No description'}
+                  placeholder={store.board.loading ? '' : 'No description'}
                   onChange={this.handleChange('description')}
                   onBlur={this.handleBlur('description')}
-                  value={this.state.description}
+                  value={board.description}
                 />
               </div>
               <Flex justify="space-between" align="center">
                 <Box mr={4}>
-                  <Avatars profiles={this.state.profiles} size={40} />
+                  <Avatars profiles={board.profiles} size={40} />
                 </Box>
                 <Box mr={3} width="70px">
                   <Label>Public</Label>
@@ -215,7 +221,7 @@ class Board extends Component {
                     width={54}
                     uncheckedIcon={false}
                     checkedIcon={false}
-                    checked={this.state.public}
+                    checked={Boolean(board.public)}
                     offColor="#ddd"
                     onColor="#0087ff"
                     onChange={val => this.updateBoard('public', Boolean(val))}
@@ -234,7 +240,7 @@ class Board extends Component {
         </StyledDropzone>
 
         <Content>
-          {this.state.images.map(image => (
+          {images.map(image => (
             <Draggable
               key={image.id}
               lockAspectRatio
@@ -243,6 +249,7 @@ class Board extends Component {
             >
               <div>
                 <img
+                  alt=""
                   style={{
                     border:
                       this.state.selected.id === image.id
@@ -252,7 +259,7 @@ class Board extends Component {
                   onClick={() => {
                     this.setState({
                       selected: image
-                    });
+                    })
                   }}
                   draggable="false"
                   src={image.href}
@@ -262,17 +269,15 @@ class Board extends Component {
           ))}
         </Content>
       </BoardContainer>
-    );
+    )
   }
 }
 
 Board.propTypes = {
-  history: PropTypes.shape({
-    replace: PropTypes.func
-  }).isRequired,
+  store: storePropTypes.isRequired,
   match: PropTypes.shape({
     params: PropTypes.object
   }).isRequired
-};
+}
 
-export default Board;
+export default Board

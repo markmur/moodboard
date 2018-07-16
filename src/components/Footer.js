@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Box } from 'grid-styled';
-import { Content } from '../styles';
+import React from 'react'
+import styled from 'styled-components'
+import { Box } from 'grid-styled'
+import { Content } from '../styles'
 
 export default styled(props => (
   <footer {...props}>
@@ -24,10 +24,6 @@ export default styled(props => (
     </Content>
   </footer>
 ))`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
   background: black;
   color: white;
   padding: 2.5em 1em;
@@ -37,4 +33,4 @@ export default styled(props => (
   strong {
     border-bottom: 2px solid;
   }
-`;
+`

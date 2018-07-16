@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Box } from 'grid-styled';
-import { Consumer } from '../AuthProvider';
-import firebase from '../firebase';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Box } from 'grid-styled'
+import { Consumer } from '../context/Auth'
+import firebase from '../services/firebase'
 import {
   Content,
   Container,
@@ -11,62 +11,62 @@ import {
   Input,
   SubmitButton,
   Textarea
-} from '../styles';
+} from '../styles'
 
 class NewBoard extends Component {
   state = {
     errors: {}
-  };
+  }
 
   handleSubmit = event => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const name = event.target.name.value;
-    const description = event.target.description.value;
+    const name = event.target.name.value
+    const description = event.target.description.value
 
     const board = {
       name,
       description
-    };
-
-    if (this.validate(board)) this.create(board);
-  };
-
-  validate(board = {}) {
-    let valid = true;
-    const errors = {};
-
-    if (!board.name) {
-      errors.name = 'Name is required';
-      valid = false;
     }
 
-    this.setState({ errors });
+    if (this.validate(board)) this.create(board)
+  }
 
-    return valid;
+  validate(board = {}) {
+    let valid = true
+    const errors = {}
+
+    if (!board.name) {
+      errors.name = 'Name is required'
+      valid = false
+    }
+
+    this.setState({ errors })
+
+    return valid
   }
 
   async create(board) {
-    console.log('Creating new board...', { board });
+    console.log('Creating new board...', { board })
     firebase
       .createBoard(this.props.userId, board)
       .then(newBoard => {
-        console.log({ newBoard });
-        console.log(`Redirecting to /boards/${newBoard.id}`, this.props);
-        this.props.history.replace(`/boards/${newBoard.id}`);
+        console.log({ newBoard })
+        console.log(`Redirecting to /boards/${newBoard.id}`, this.props)
+        this.props.history.replace(`/boards/${newBoard.id}`)
       })
       .catch(err => {
         this.setState(({ errors }) => ({
           ...errors,
           global: err
-        }));
-      });
+        }))
+      })
   }
 
   renderErrorMessage = field => {
-    const error = this.state.errors[field];
-    return error && <Error>{error}</Error>;
-  };
+    const error = this.state.errors[field]
+    return error && <Error>{error}</Error>
+  }
 
   render() {
     return (
@@ -99,7 +99,7 @@ class NewBoard extends Component {
           </form>
         </Container>
       </Content>
-    );
+    )
   }
 }
 
@@ -108,8 +108,8 @@ NewBoard.propTypes = {
   history: PropTypes.shape({
     replace: PropTypes.func
   }).isRequired
-};
+}
 
 export default props => (
   <Consumer>{({ user }) => <NewBoard userId={user.uid} {...props} />}</Consumer>
-);
+)

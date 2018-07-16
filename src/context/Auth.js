@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { withLastLocation } from 'react-router-last-location';
-import { auth } from './firebase';
+import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { withLastLocation } from 'react-router-last-location'
+import { auth } from '../services/firebase'
 
 const defaultAuthContext = {
   authenticated: false,
   user: null,
   loading: true
-};
+}
 
-const AuthContext = React.createContext(defaultAuthContext);
+const { Provider, Consumer } = React.createContext(defaultAuthContext)
 
 class FirebaseAuthProvider extends Component {
-  state = defaultAuthContext;
+  state = defaultAuthContext
 
   componentDidMount() {
     this.removeAuthListener = auth().onAuthStateChanged(user => {
@@ -26,22 +26,25 @@ class FirebaseAuthProvider extends Component {
             }
           : defaultAuthContext,
         this.redirect
-      );
-    });
+      )
+    })
   }
 
   componentWillUnmount() {
-    this.removeAuthListener();
+    this.removeAuthListener()
   }
 
   redirect() {
-    const { location, history } = this.props;
+    const { location, history, lastLocation } = this.props
+
     const route =
       location.pathname === '/login'
-        ? this.props.lastLocation.pathname
-        : location.pathname;
+        ? lastLocation
+          ? lastLocation.pathname
+          : '/'
+        : location.pathname
 
-    return history.replace(route);
+    return history.replace(route)
   }
 
   getUser({ displayName, photoURL, uid }) {
@@ -49,15 +52,11 @@ class FirebaseAuthProvider extends Component {
       displayName,
       photoURL,
       uid
-    };
+    }
   }
 
   render() {
-    return (
-      <AuthContext.Provider value={this.state}>
-        {this.props.children}
-      </AuthContext.Provider>
-    );
+    return <Provider value={this.state}>{this.props.children}</Provider>
   }
 }
 
@@ -72,8 +71,8 @@ FirebaseAuthProvider.propTypes = {
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired
   }).isRequired
-};
+}
 
-export const { Consumer } = AuthContext;
+export { Consumer }
 
-export const Provider = withLastLocation(withRouter(FirebaseAuthProvider));
+export default withLastLocation(withRouter(FirebaseAuthProvider))

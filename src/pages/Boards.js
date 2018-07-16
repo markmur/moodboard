@@ -1,21 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { Flex, Box } from 'grid-styled';
-import styled from 'styled-components';
-import { Trash } from '../icons';
-import { Consumer } from '../AuthProvider';
-import firebase, { db } from '../firebase';
-import { Content } from '../styles';
-import BoardIcon from '../icons/board';
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import { Flex, Box } from 'grid-styled'
+import styled from 'styled-components'
+import { Trash } from '../icons'
+import { Consumer } from '../context/Auth'
+import firebase from '../services/firebase'
+import { Content } from '../styles'
+import BoardIcon from '../icons/board'
 
-import Button from '../components/Button';
+import { storePropTypes } from '../prop-types'
+
+import Button from '../components/Button'
 
 const Board = styled(Flex)`
   border: 1px solid ${p => p.theme.colors.gray};
   background: white;
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.05);
   ${p => p.theme.borderRadius};
+  box-shadow: ${p => p.theme.shadow};
 
   a {
     padding: 2em;
@@ -24,41 +26,26 @@ const Board = styled(Flex)`
     align-items: center;
     width: 100%;
   }
-`;
+`
 
 const Description = styled.p`
   color: ${p => p.theme.colors.gray};
-`;
+`
 
 class Boards extends Component {
-  state = {
-    boards: []
-  };
-
   componentDidMount() {
-    this.unsubscribe = db
-      .collection('boards')
-      .where(`members.${this.props.user.uid}`, '==', true)
-      .onSnapshot(this.setBoardsToState);
+    this.props.store.subscribe('boards')
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    this.props.store.unsubscribe('boards')
   }
 
-  setBoardsToState = snapshot =>
-    this.setState({
-      boards: snapshot.docs.map(x => ({
-        ...x.data(),
-        id: x.id
-      }))
-    });
-
   handleBoardDelete = boardId => event => {
-    event.preventDefault();
+    event.preventDefault()
 
-    firebase.deleteBoard(boardId);
-  };
+    firebase.deleteBoard(boardId)
+  }
 
   renderEmptyState() {
     return (
@@ -77,10 +64,12 @@ class Boards extends Component {
           <Link to="/boards/new">Create Board</Link>
         </Button>
       </Flex>
-    );
+    )
   }
 
   render() {
+    const { store } = this.props
+
     return (
       <Content minHeight pt={4} bg="white">
         <Flex justify="space-between" align="center">
@@ -90,9 +79,9 @@ class Boards extends Component {
           </Button>
         </Flex>
 
-        {this.state.boards.length > 0 ? (
+        {store.boards.hasData ? (
           <Flex flexWrap="wrap" py={3} mx={-3}>
-            {this.state.boards.map(board => (
+            {store.boards.data.map(board => (
               <Box
                 key={board.id}
                 mb={3}
@@ -117,16 +106,14 @@ class Boards extends Component {
           this.renderEmptyState()
         )}
       </Content>
-    );
+    )
   }
 }
 
 Boards.propTypes = {
-  user: PropTypes.shape({
-    uid: PropTypes.string
-  }).isRequired
-};
+  store: storePropTypes.isRequired
+}
 
 export default props => (
   <Consumer>{({ user }) => <Boards {...props} user={user} />}</Consumer>
-);
+)

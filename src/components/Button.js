@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from 'react'
+import PropTypes from 'prop-types'
+import styled from 'styled-components'
 
 const Button = styled(props => (
   <div type="button" {...props}>
@@ -24,10 +24,10 @@ const Button = styled(props => (
   }
 
   ${props => props.theme.borderRadius};
-`;
+`
 
 Button.propTypes = {
   children: PropTypes.any.isRequired
-};
+}
 
-export default Button;
+export default Button

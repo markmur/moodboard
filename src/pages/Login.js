@@ -1,40 +1,39 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Flex } from 'grid-styled';
-import { withRouter } from 'react-router-dom';
-import styled, { css } from 'styled-components';
-import { withLastLocation } from 'react-router-last-location';
-import * as firebaseui from 'firebaseui';
-import firebase, { auth } from '../firebase';
-import { Logo } from '../styles';
-import 'firebaseui/dist/firebaseui.css';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Flex } from 'grid-styled'
+import { withRouter } from 'react-router-dom'
+import styled, { css } from 'styled-components'
+import { withLastLocation } from 'react-router-last-location'
+import * as firebaseui from 'firebaseui'
+import firebase, { auth } from '../services/firebase'
+import { Logo } from '../styles'
+import 'firebaseui/dist/firebaseui.css'
 
 const loginStyles = css`
   height: 100vh;
   text-align: center;
   max-width: 300px;
   margin: auto;
-`;
+`
 
 const Description = styled.p`
   color: #222;
   font-size: 17px;
   margin-bottom: 2em;
-`;
+`
 
 class Login extends Component {
   state = {
     loading: true
-  };
+  }
 
   componentDidMount() {
-    let ui = firebaseui.auth.AuthUI.getInstance();
+    const { lastLocation } = this.props
+    let ui = firebaseui.auth.AuthUI.getInstance()
 
     if (!ui) {
-      ui = new firebaseui.auth.AuthUI(auth());
+      ui = new firebaseui.auth.AuthUI(auth())
     }
-
-    console.log(this.props.lastLocation.pathname);
 
     ui.start('#firebaseui-auth-container', {
       signInFlow: 'popup',
@@ -43,18 +42,18 @@ class Login extends Component {
         auth.GithubAuthProvider.PROVIDER_ID,
         auth.TwitterAuthProvider.PROVIDER_ID
       ],
-      signInSuccessUrl: this.props.lastLocation.pathname,
+      signInSuccessUrl: lastLocation ? lastLocation.pathname : '/',
       callbacks: {
         signInSuccessWithAuthResult: async authResult => {
-          const { user } = authResult;
+          const { user } = authResult
 
-          await firebase.createOrUpdateUser(user);
+          await firebase.createOrUpdateUser(user)
         },
         uiShown: () => {
-          this.setState({ loading: false });
+          this.setState({ loading: false })
         }
       }
-    });
+    })
   }
 
   render() {
@@ -70,19 +69,19 @@ class Login extends Component {
         {this.state.loading && <div>Loading...</div>}
         <div id="firebaseui-auth-container" />
       </Flex>
-    );
+    )
   }
 }
 
 Login.defaultProps = {
   className: ''
-};
+}
 
 Login.propTypes = {
   className: PropTypes.string,
   lastLocation: PropTypes.shape({
     pathname: PropTypes.string
   }).isRequired
-};
+}
 
-export default withLastLocation(withRouter(styled(Login)(loginStyles)));
+export default withLastLocation(withRouter(styled(Login)(loginStyles)))
