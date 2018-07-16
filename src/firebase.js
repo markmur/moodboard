@@ -37,15 +37,27 @@ class FirebaseClient {
     return auth().signOut();
   }
 
-  createOrUpdateUser({ uid, displayName, photoURL, email }) {
+  createOrUpdateUser({ uid, displayName, photoURL, email }, providers) {
+    const profile = {
+      displayName,
+      photoURL,
+      email
+    };
+
+    providers.forEach(provider => {
+      const { providerId, uid } = provider;
+
+      if (providerId && uid) {
+        profile[`${providerId.replace('.com', '')}Id`] = uid;
+      }
+    });
+
+    console.log(JSON.stringify(profile));
+
     return db
       .collection(USERS)
       .doc(uid)
-      .set({
-        displayName,
-        photoURL,
-        email
-      })
+      .set(profile)
       .catch(handleError('createOrUpdateUser'));
   }
 

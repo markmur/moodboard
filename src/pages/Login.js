@@ -34,21 +34,24 @@ class Login extends Component {
       ui = new firebaseui.auth.AuthUI(auth());
     }
 
-    console.log(this.props.lastLocation.pathname);
-
     ui.start('#firebaseui-auth-container', {
       signInFlow: 'popup',
       signInOptions: [
         auth.GoogleAuthProvider.PROVIDER_ID,
         auth.GithubAuthProvider.PROVIDER_ID,
-        auth.TwitterAuthProvider.PROVIDER_ID
+        auth.TwitterAuthProvider.PROVIDER_ID,
+        auth.FacebookAuthProvider.PROVIDER_ID
       ],
       signInSuccessUrl: this.props.lastLocation.pathname,
       callbacks: {
-        signInSuccessWithAuthResult: async authResult => {
+        signInSuccessWithAuthResult: authResult => {
           const { user } = authResult;
 
-          await firebase.createOrUpdateUser(user);
+          const { providerData } = user;
+
+          firebase
+            .createOrUpdateUser(user, providerData || [])
+            .then(response => console.log(response));
         },
         uiShown: () => {
           this.setState({ loading: false });

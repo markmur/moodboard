@@ -61,6 +61,12 @@ class FirebaseAuthProvider extends Component {
   }
 }
 
+FirebaseAuthProvider.defaultProps = {
+  lastLocation: {
+    pathname: ''
+  }
+};
+
 FirebaseAuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
   location: PropTypes.shape({
@@ -68,7 +74,7 @@ FirebaseAuthProvider.propTypes = {
   }).isRequired,
   lastLocation: PropTypes.shape({
     pathname: PropTypes.string
-  }).isRequired,
+  }),
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired
   }).isRequired

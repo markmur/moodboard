@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
-import { Flex } from 'grid-styled';
-import styled from 'styled-components';
-import { Consumer } from '../AuthProvider';
-import firebase from '../firebase';
-import { Avatar, Logo } from '../styles';
+import React, { Fragment } from 'react'
+import PropTypes from 'prop-types'
+import { Link, withRouter } from 'react-router-dom'
+import { Flex } from 'grid-styled'
+import styled from 'styled-components'
+import { Consumer } from '../AuthProvider'
+import firebase from '../firebase'
+import { Avatar, Logo } from '../styles'
 
 const Nav = styled.header`
   background: white;
@@ -24,7 +24,7 @@ const Nav = styled.header`
       padding: 0.5em 0;
     }
   }
-`;
+`
 
 const Header = ({ history }) => (
   <Nav>
@@ -59,12 +59,12 @@ const Header = ({ history }) => (
       </ul>
     </Flex>
   </Nav>
-);
+)
 
 Header.propTypes = {
   history: PropTypes.shape({
     replace: PropTypes.func
   }).isRequired
-};
+}
 
-export default withRouter(Header);
+export default withRouter(Header)

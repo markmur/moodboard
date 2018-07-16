@@ -1972,7 +1972,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.5:
+classnames@2.x, classnames@^2.2.5:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
 
@@ -1988,13 +1988,13 @@ clean-regexp@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.5"
 
-clean-tag@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/clean-tag/-/clean-tag-1.0.4.tgz#9b407b306fadce114e6dffa774e7b61bdfc0c190"
+clean-tag@^1.0.4:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/clean-tag/-/clean-tag-1.1.0.tgz#83d0d3650d84805f7edeeda15a23d773069bf242"
   dependencies:
     html-tags "^2.0.0"
     react ">=16.0.0"
-    styled-system ">=1.1 || >=2.0"
+    styled-system ">=2.0.0 || >=3.0.0"
 
 cli-boxes@^1.0.0:
   version "1.0.0"
@@ -2783,6 +2783,10 @@ des.js@^1.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
+desandro-matches-selector@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/desandro-matches-selector/-/desandro-matches-selector-2.0.2.tgz#717beed4dc13e7d8f3762f707a6d58a6774218e1"
+
 destroy@^1.0.4, destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
@@ -3562,6 +3566,10 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
 
+ev-emitter@^1.0.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ev-emitter/-/ev-emitter-1.1.1.tgz#8f18b0ce5c76a5d18017f71c0a795c65b9138f2a"
+
 event-emitter@~0.3.5:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/event-emitter/-/event-emitter-0.3.5.tgz#df8c69eef1647923c7157b9ce83840610b02cc39"
@@ -4082,6 +4090,12 @@ firebaseui@^3.1.1:
   dependencies:
     dialog-polyfill "^0.4.7"
 
+fizzy-ui-utils@^2.0.0:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/fizzy-ui-utils/-/fizzy-ui-utils-2.0.7.tgz#7df45dcc4eb374a08b65d39bb9a4beedf7330505"
+  dependencies:
+    desandro-matches-selector "^2.0.0"
+
 flat-arguments@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flat-arguments/-/flat-arguments-1.0.2.tgz#9baa780adf0501f282d726c9c6a038dba44ea76f"
@@ -4264,6 +4278,10 @@ get-own-enumerable-property-symbols@^2.0.1:
 get-set-props@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/get-set-props/-/get-set-props-0.1.0.tgz#998475c178445686d0b32246da5df8dbcfbe8ea3"
+
+get-size@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/get-size/-/get-size-2.0.3.tgz#54a1d0256b20ea7ac646516756202769941ad2ef"
 
 get-stdin@^4.0.1:
   version "4.0.1"
@@ -4557,12 +4575,12 @@ graceful-fs@^4.1.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6,
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
-grid-styled@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/grid-styled/-/grid-styled-4.2.0.tgz#8996d7a360c193c6e51f35814bc3e25386f6fe4b"
+grid-styled@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/grid-styled/-/grid-styled-4.3.2.tgz#dadde33eb1a5db3a6032885b174cfa6cd28fb9c7"
   dependencies:
-    clean-tag "^1.0.3"
-    styled-system ">=2.0.2"
+    clean-tag "^1.0.4"
+    system-components ">=2.2.3"
 
 growly@^1.3.0:
   version "1.3.0"
@@ -4942,6 +4960,10 @@ ignore-walk@^3.0.1:
 ignore@^3.3.3, ignore@^3.3.5, ignore@^3.3.6:
   version "3.3.10"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
+
+images-loaded@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/images-loaded/-/images-loaded-1.0.0.tgz#727c2c863a3d922f0026e8c7e655ac61fa546a7f"
 
 import-lazy@^2.1.0:
   version "2.1.0"
@@ -6250,7 +6272,7 @@ lodash.isboolean@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz#6c2e171db2a257cd96802fd43b01b20d5f5870f6"
 
-lodash.isequal@^4.5.0:
+lodash.isequal@^4.0.0, lodash.isequal@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
 
@@ -6491,6 +6513,10 @@ mem@^1.1.0:
   resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
   dependencies:
     mimic-fn "^1.0.0"
+
+memoize-one@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-4.0.0.tgz#fc5e2f1427a216676a62ec652cf7398cfad123db"
 
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"
@@ -7167,6 +7193,14 @@ osenv@^0.1.0, osenv@^0.1.4:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
 
+outlayer@^2.0.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/outlayer/-/outlayer-2.1.1.tgz#29863b6de10ea5dadfffcadfa0d728907387e9a2"
+  dependencies:
+    ev-emitter "^1.0.0"
+    fizzy-ui-utils "^2.0.0"
+    get-size "^2.0.2"
+
 ow@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/ow/-/ow-0.6.0.tgz#1371352713192a8dd54ec13ab0f0f1464b58941f"
@@ -7233,6 +7267,13 @@ package-json@^4.0.0:
     registry-auth-token "^3.0.1"
     registry-url "^3.0.3"
     semver "^5.1.0"
+
+packery@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/packery/-/packery-2.1.2.tgz#92a3cc3303e781f151d93ee34d13325790c4f13f"
+  dependencies:
+    get-size "^2.0.2"
+    outlayer "^2.0.0"
 
 pako@~1.0.5:
   version "1.0.6"
@@ -8070,7 +8111,7 @@ react-dom@^16.4.1:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
-react-draggable@3.0.5, "react-draggable@^2.2.6 || ^3.0.3", react-draggable@^3.0.5:
+react-draggable@3.0.5, react-draggable@3.x, "react-draggable@^2.2.6 || ^3.0.3", react-draggable@^3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-3.0.5.tgz#c031e0ed4313531f9409d6cd84c8ebcec0ddfe2d"
   dependencies:
@@ -8087,6 +8128,16 @@ react-dropzone@^4.2.12:
 react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
+
+react-grid-layout@^0.16.6:
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/react-grid-layout/-/react-grid-layout-0.16.6.tgz#9b2407a2b946c2260ebaf66f13b556e1da4efeb2"
+  dependencies:
+    classnames "2.x"
+    lodash.isequal "^4.0.0"
+    prop-types "15.x"
+    react-draggable "3.x"
+    react-resizable "1.x"
 
 react-hot-loader@^4.0.0:
   version "4.0.0"
@@ -8118,7 +8169,7 @@ react-is@^16.3.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
 
-react-resizable@^1.7.5:
+react-resizable@1.x, react-resizable@^1.7.5:
   version "1.7.5"
   resolved "https://registry.yarnpkg.com/react-resizable/-/react-resizable-1.7.5.tgz#83eb75bb3684da6989bbbf4f826e1470f0af902e"
   dependencies:
@@ -9354,7 +9405,19 @@ styled-components@^3.3.3:
     stylis-rule-sheet "^0.0.10"
     supports-color "^3.2.3"
 
-"styled-system@>=1.1 || >=2.0", styled-system@>=2.0.2, styled-system@^2.3.2:
+"styled-system@>=2.0.0 || >=3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-3.0.0.tgz#b23303aa867e7fc37bcfa4b5320d260e8c6c4c01"
+  dependencies:
+    prop-types "^15.6.2"
+
+styled-system@^2.3.1:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-2.3.6.tgz#a38c1ffa04a5c35adec46473984e463c48b16f7c"
+  dependencies:
+    prop-types "^15.6.0"
+
+styled-system@^2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-2.3.2.tgz#b5dbc7d197b41dd06b80b16e17b52503363a5aac"
   dependencies:
@@ -9478,6 +9541,13 @@ symbol-observable@^1.1.0:
 symbol-tree@^3.2.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.2.tgz#ae27db38f660a7ae2e1c3b7d1bc290819b8519e6"
+
+system-components@>=2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/system-components/-/system-components-2.2.3.tgz#3248f7c80affa4b9b61003ecd719a73da4462e59"
+  dependencies:
+    clean-tag "^1.0.4"
+    styled-system "^2.3.1"
 
 table@4.0.2:
   version "4.0.2"
