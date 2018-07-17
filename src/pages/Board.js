@@ -227,15 +227,27 @@ class Board extends Component {
                     onChange={val => this.updateBoard('public', Boolean(val))}
                   />
                 </Box>
-                <Button>
-                  <a>Share</a>
+                <Button
+                  onClick={() => {
+                    console.log(this.dropzone)
+                    this.dropzone.open()
+                  }}
+                >
+                  <a>Upload</a>
                 </Button>
               </Flex>
             </Flex>
           </Content>
         </Header>
 
-        <StyledDropzone style={{ position: 'fixed' }} onDrop={this.onDrop}>
+        <StyledDropzone
+          innerRef={c => {
+            this.dropzone = c
+          }}
+          accept="image/*"
+          style={{ position: 'fixed' }}
+          onDrop={this.onDrop}
+        >
           {({ isDragActive }) => (isDragActive ? <Overlay /> : null)}
         </StyledDropzone>
 
