@@ -38,11 +38,7 @@ class FirebaseAuthProvider extends Component {
     const { location, history, lastLocation } = this.props
 
     const route =
-      location.pathname === '/login'
-        ? lastLocation
-          ? lastLocation.pathname
-          : '/'
-        : location.pathname
+      location.pathname === '/login' ? lastLocation : location.pathname
 
     return history.replace(route)
   }
@@ -65,9 +61,7 @@ FirebaseAuthProvider.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }).isRequired,
-  lastLocation: PropTypes.shape({
-    pathname: PropTypes.string
-  }).isRequired,
+  lastLocation: PropTypes.string.isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired
   }).isRequired

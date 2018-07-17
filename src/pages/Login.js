@@ -42,7 +42,7 @@ class Login extends Component {
         auth.GithubAuthProvider.PROVIDER_ID,
         auth.TwitterAuthProvider.PROVIDER_ID
       ],
-      signInSuccessUrl: lastLocation ? lastLocation.pathname : '/',
+      signInSuccessUrl: lastLocation || '/',
       callbacks: {
         signInSuccessWithAuthResult: async authResult => {
           const { user } = authResult
@@ -79,9 +79,7 @@ Login.defaultProps = {
 
 Login.propTypes = {
   className: PropTypes.string,
-  lastLocation: PropTypes.shape({
-    pathname: PropTypes.string
-  }).isRequired
+  lastLocation: PropTypes.string.isRequired
 }
 
 export default withLastLocation(withRouter(styled(Login)(loginStyles)))

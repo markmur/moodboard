@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
 import { Route, Redirect, Switch, withRouter } from 'react-router-dom'
-import { ThemeProvider } from 'styled-components'
-import { LastLocationProvider } from 'react-router-last-location'
-import theme from './styles/theme'
+
+import Root from './containers/Root'
 
 // Context
-import AuthProvider, { Consumer as AuthConsumer } from './context/Auth'
-import FirebaseProvider, {
-  Consumer as FirebaseConsumer
-} from './context/Firebase'
+import { Consumer as FirebaseConsumer } from './context/Firebase'
+import { Consumer as LastLocationConsumer } from './context/LastLocation'
 
 // Components
 import Header from './components/Header'
@@ -23,60 +20,59 @@ import Protected from './containers/Protected'
 class App extends Component {
   render() {
     return (
-      <LastLocationProvider>
-        <ThemeProvider theme={theme}>
-          <AuthProvider>
-            <AuthConsumer>
-              {({ user }) => (
-                <FirebaseProvider user={user}>
-                  <Switch>
-                    <Redirect exact from="/" to="/boards" />
-                    <Route path="/login" component={Login} />
-                    <Protected>
-                      <Route path="/">
-                        <div>
+      <Root>
+        <LastLocationConsumer>
+          {({ lastLocation }) => (
+            <Switch>
+              <Redirect exact from="/" to="/boards" />
+              <Route
+                path="/login"
+                component={props => (
+                  <Login {...props} lastLocation={lastLocation} />
+                )}
+              />
+              <Protected>
+                <Route path="/">
+                  <div>
+                    <div>
+                      <Header />
+                      <FirebaseConsumer>
+                        {store => (
                           <div>
-                            <Header />
-                            <FirebaseConsumer>
-                              {store => (
-                                <div>
-                                  {store.loading && <Loader />}
-                                  <Switch>
-                                    <Route
-                                      exact
-                                      path="/boards"
-                                      render={props => (
-                                        <Boards {...props} store={store} />
-                                      )}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/boards/new"
-                                      component={NewBoard}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/boards/:id"
-                                      render={props => (
-                                        <Board {...props} store={store} />
-                                      )}
-                                    />
-                                  </Switch>
-                                </div>
-                              )}
-                            </FirebaseConsumer>
-                            <Footer />
+                            {store.loading && <Loader />}
+                            <Switch>
+                              <Route
+                                exact
+                                path="/boards"
+                                render={props => (
+                                  <Boards {...props} store={store} />
+                                )}
+                              />
+                              <Route
+                                exact
+                                path="/boards/new"
+                                component={NewBoard}
+                              />
+                              <Route
+                                exact
+                                path="/boards/:id"
+                                render={props => (
+                                  <Board {...props} store={store} />
+                                )}
+                              />
+                            </Switch>
                           </div>
-                        </div>
-                      </Route>
-                    </Protected>
-                  </Switch>
-                </FirebaseProvider>
-              )}
-            </AuthConsumer>
-          </AuthProvider>
-        </ThemeProvider>
-      </LastLocationProvider>
+                        )}
+                      </FirebaseConsumer>
+                      <Footer />
+                    </div>
+                  </div>
+                </Route>
+              </Protected>
+            </Switch>
+          )}
+        </LastLocationConsumer>
+      </Root>
     )
   }
 }
