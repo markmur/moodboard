@@ -35,6 +35,7 @@ const Description = styled.p`
 class Boards extends Component {
   componentDidMount() {
     this.props.store.subscribe('boards')
+    this.props.store.subscribe('following')
   }
 
   componentWillUnmount() {
@@ -104,6 +105,33 @@ class Boards extends Component {
           </Flex>
         ) : (
           this.renderEmptyState()
+        )}
+
+        {store.following.hasData && (
+          <Box mt={5}>
+            <h2>Following</h2>
+
+            <Flex flexWrap="wrap" py={3} mx={-3}>
+              {store.following.data.map(board => (
+                <Box
+                  key={board.id}
+                  mb={3}
+                  mx={0}
+                  px={3}
+                  width={[1, 1 / 2, 1 / 3]}
+                >
+                  <Board>
+                    <Link to={`/boards/${board.id}`}>
+                      <div>
+                        <h2>{board.name}</h2>
+                        <Description>{board.description}</Description>
+                      </div>
+                    </Link>
+                  </Board>
+                </Box>
+              ))}
+            </Flex>
+          </Box>
         )}
       </Content>
     )

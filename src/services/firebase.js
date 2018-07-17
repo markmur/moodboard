@@ -23,7 +23,9 @@ if (firebase.apps.length <= 0) {
 }
 
 const { auth, storage } = firebase
+
 const db = firebase.firestore(app)
+
 db.settings({ timestampsInSnapshots: true })
 
 const handleError = name => error => {
@@ -84,6 +86,34 @@ class FirebaseClient {
       .update({
         [field]: value
       })
+  }
+
+  followBoard(id, uid) {
+    return db
+      .collection(BOARDS)
+      .doc(id)
+      .set(
+        {
+          followers: {
+            [uid]: true
+          }
+        },
+        { merge: true }
+      )
+  }
+
+  unfollowBoard(id, uid) {
+    return db
+      .collection(BOARDS)
+      .doc(id)
+      .set(
+        {
+          followers: {
+            [uid]: false
+          }
+        },
+        { merge: true }
+      )
   }
 
   deleteBoard(id) {
@@ -166,6 +196,19 @@ class FirebaseClient {
         }
       })
       .catch(handleError('updateImagePosition'))
+  }
+
+  updateImageDimensions(boardId, imageId, { width, height }) {
+    return db
+      .collection(`${BOARDS}/${boardId}/${IMAGES}`)
+      .doc(imageId)
+      .update({
+        dimensions: {
+          width,
+          height
+        }
+      })
+      .catch(handleError('updateImageDimensions'))
   }
 }
 

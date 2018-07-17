@@ -17,6 +17,10 @@ const queries = {
     get: uid => db.collection('boards').where(`members.${uid}`, '==', true),
     type: COLLECTION
   },
+  following: {
+    get: uid => db.collection('boards').where(`followers.${uid}`, '==', true),
+    type: COLLECTION
+  },
   board: {
     get: (uid, id) => db.collection('boards').doc(id),
     type: DOC

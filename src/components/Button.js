@@ -2,6 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+const type = p => {
+  switch (p.type) {
+    case 'success':
+      return `background: ${p.theme.colors.success}`
+    default:
+      return 'background: blue'
+  }
+}
+
 const Button = styled(props => (
   <div type="button" {...props}>
     {props.children}
@@ -10,9 +19,10 @@ const Button = styled(props => (
   font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
-  background: blue;
   color: white;
   cursor: pointer;
+
+  ${type};
 
   a {
     display: block;

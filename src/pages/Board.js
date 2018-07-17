@@ -9,7 +9,8 @@ import Switch from 'react-switch'
 import firebase, { db } from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
-import { storePropTypes } from '../prop-types'
+import { storePropTypes, userPropTypes } from '../prop-types'
+import { get } from '../services/utils'
 
 const Overlay = styled.div.attrs({
   children: 'Drop files to upload'
@@ -156,6 +157,13 @@ class Board extends Component {
     firebase.updateImagePosition(this.boardId, imageId, { x, y })
   }
 
+  handleResize = imageId => (e, direction, ref) => {
+    firebase.updateImageDimensions(this.boardId, imageId, {
+      width: ref.style.width,
+      height: ref.style.height
+    })
+  }
+
   updateBoard = (field, value) => {
     try {
       db.collection('boards')
@@ -166,6 +174,15 @@ class Board extends Component {
     } catch (err) {
       console.log('Error updating board name', { err })
     }
+  }
+
+  following = (board, uid) =>
+    board && board.followers && uid in board.followers && board.followers[uid]
+
+  followBoard = () => {
+    const { user } = this.props
+
+    firebase.followBoard(this.boardId, user.uid)
   }
 
   handleBlur = field => () => {
@@ -183,7 +200,7 @@ class Board extends Component {
   }
 
   render() {
-    const { store } = this.props
+    const { store, user } = this.props
 
     const board = store.board.data
     const images = store.images.data
@@ -219,6 +236,7 @@ class Board extends Component {
                   <Switch
                     height={23}
                     width={54}
+                    disabled={board.createdBy !== user.uid}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     checked={Boolean(board.public)}
@@ -227,14 +245,21 @@ class Board extends Component {
                     onChange={val => this.updateBoard('public', Boolean(val))}
                   />
                 </Box>
-                <Button
-                  onClick={() => {
-                    console.log(this.dropzone)
-                    this.dropzone.open()
-                  }}
-                >
-                  <a>Upload</a>
-                </Button>
+                {board.createdBy === user.uid ? (
+                  <Button onClick={() => this.dropzone.open()}>
+                    <a>Upload</a>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={this.followBoard}
+                    type={this.following(board, user.uid) && 'success'}
+                  >
+                    <a>
+                      {this.following(board, user.uid) ? 'Following' : 'Follow'}{' '}
+                      Board
+                    </a>
+                  </Button>
+                )}
               </Flex>
             </Flex>
           </Content>
@@ -256,8 +281,13 @@ class Board extends Component {
             <Draggable
               key={image.id}
               lockAspectRatio
-              default={{ x: image.position.x, y: image.position.y, width: 400 }}
+              default={{
+                x: image.position.x,
+                y: image.position.y,
+                width: get(image, 'dimensions.width', 400)
+              }}
               onDragStop={this.handleDragEnd(image.id)}
+              onResize={this.handleResize(image.id)}
             >
               <div>
                 <img
@@ -286,6 +316,7 @@ class Board extends Component {
 }
 
 Board.propTypes = {
+  user: userPropTypes.isRequired,
   store: storePropTypes.isRequired,
   match: PropTypes.shape({
     params: PropTypes.object

@@ -6,7 +6,8 @@ export const userPropTypes = PropTypes.shape({
 
 export const storePropTypes = PropTypes.shape({
   subscribe: PropTypes.func,
-  unsubscribe: PropTypes.func
+  unsubscribe: PropTypes.func,
+  board: PropTypes.object
 })
 
 export const historyPropTypes = PropTypes.shape({

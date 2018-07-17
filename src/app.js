@@ -58,7 +58,11 @@ class App extends Component {
                                       exact
                                       path="/boards/:id"
                                       render={props => (
-                                        <Board {...props} store={store} />
+                                        <Board
+                                          {...props}
+                                          user={user}
+                                          store={store}
+                                        />
                                       )}
                                     />
                                   </Switch>
