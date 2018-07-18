@@ -4,6 +4,9 @@ import { ThemeProvider } from 'styled-components'
 import { LastLocationProvider } from 'react-router-last-location'
 import theme from './styles/theme'
 
+// Import styles for react-tippy (tooltips)
+import 'react-tippy/dist/tippy.css'
+
 // Context
 import AuthProvider, { Consumer as AuthConsumer } from './context/Auth'
 import FirebaseProvider, {
@@ -23,8 +26,8 @@ import Protected from './containers/Protected'
 class App extends Component {
   render() {
     return (
-      <LastLocationProvider>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <LastLocationProvider>
           <AuthProvider>
             <AuthConsumer>
               {({ user }) => (
@@ -79,8 +82,8 @@ class App extends Component {
               )}
             </AuthConsumer>
           </AuthProvider>
-        </ThemeProvider>
-      </LastLocationProvider>
+        </LastLocationProvider>
+      </ThemeProvider>
     )
   }
 }

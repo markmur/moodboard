@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
@@ -11,23 +11,58 @@ const type = p => {
   }
 }
 
-const Button = styled(props => (
-  <div type="button" {...props}>
-    {props.children}
-  </div>
-))`
+class Button extends Component {
+  static defaultProps = {
+    children: '',
+    hoverText: '',
+    className: ''
+  }
+
+  static propTypes = {
+    children: PropTypes.string,
+    hoverText: PropTypes.string,
+    className: PropTypes.string
+  }
+
+  state = {
+    hover: false
+  }
+
+  updateState = hover => () => this.setState({ hover })
+
+  render() {
+    const { children, hoverText, className, ...rest } = this.props
+    const { hover } = this.state
+
+    let text
+
+    if (hoverText && hover) text = hoverText
+    else text = children
+
+    return (
+      <a
+        {...rest}
+        className={className}
+        onMouseOver={this.updateState(true)}
+        onMouseOut={this.updateState(false)}
+        type="button"
+      >
+        {text}
+      </a>
+    )
+  }
+}
+
+export default styled(Button)`
+  display: block;
   font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
   color: white;
   cursor: pointer;
+  padding: 1em 2em;
 
   ${type};
-
-  a {
-    display: block;
-    padding: 1em 2em;
-  }
 
   &:hover {
     background: rgba(0, 0, 0, 0.8);
@@ -35,9 +70,3 @@ const Button = styled(props => (
 
   ${props => props.theme.borderRadius};
 `
-
-Button.propTypes = {
-  children: PropTypes.any.isRequired
-}
-
-export default Button

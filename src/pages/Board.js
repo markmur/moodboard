@@ -89,6 +89,28 @@ const Image = styled.img.attrs({
   border: ${p => (p.selected ? '2px solid blue' : '1px solid #ddd')};
 `
 
+const ImageToolbar = styled.div`
+  position: absolute;
+  top: 0;
+  display: flex;
+  width: 100%;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  justify-content: flex-end;
+  background: blue;
+  padding: 6px;
+  cursor: default;
+
+  a {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`
+
 const Caption = styled(AutosizeInput).attrs({
   style: {
     display: 'flex'
@@ -340,13 +362,11 @@ class Board extends Component {
                   </Button>
                 ) : (
                   <Button
+                    hoverText={this.following(board, user.uid) && 'Unfollow'}
                     onClick={this.followBoard}
                     type={this.following(board, user.uid) && 'success'}
                   >
-                    <a>
-                      {this.following(board, user.uid) ? 'Following' : 'Follow'}{' '}
-                      Board
-                    </a>
+                    {this.following(board, user.uid) ? 'Following' : 'Follow'}{' '}
                   </Button>
                 )}
               </Flex>
@@ -385,23 +405,9 @@ class Board extends Component {
             >
               <div className="image" style={{ position: 'relative' }}>
                 {this.state.selected === image.id && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '0',
-                      display: 'flex',
-                      width: '100%',
-                      color: 'white',
-                      fontSize: 12,
-                      fontWeight: 'bold',
-                      justifyContent: 'flex-end',
-                      background: 'blue',
-                      padding: '6px',
-                      cursor: 'default'
-                    }}
-                  >
+                  <ImageToolbar>
                     <a onClick={this.deleteImage(image)}>Delete</a>
-                  </div>
+                  </ImageToolbar>
                 )}
                 <Image
                   selected={this.state.selected === image.id}
