@@ -83,15 +83,20 @@ const BoardDescription = BoardName.extend`
 `
 
 const Caption = styled(AutosizeInput)`
+  margin-top: 8px;
+  margin-left: 8px;
+
   input {
+    display: block;
     outline: none;
     background: transparent;
     border: none;
     font-size: 15px;
     font-weight: bold;
-    color: #222;
+    color: #7b81a2;
     text-align: left;
     width: 100%;
+    left: 0;
     font-style: italic;
     font-family: var(--font);
   }
@@ -100,7 +105,7 @@ const Caption = styled(AutosizeInput)`
 class Board extends Component {
   state = {
     loading: true,
-    selected: {},
+    selected: null,
     name: '',
     description: '',
     images: [],
@@ -235,7 +240,14 @@ class Board extends Component {
     const images = store.images.data
 
     return (
-      <BoardContainer onClick={() => this.setState({ selected: {} })}>
+      <BoardContainer
+        onClick={event => {
+          const { classList } = event.target.parentNode
+
+          if (!classList.contains('image') && !classList.contains('caption'))
+            this.setState({ selected: null })
+        }}
+      >
         <Header>
           <Content>
             <Flex justify="space-between" align="center">
@@ -309,48 +321,53 @@ class Board extends Component {
           {images.map(image => (
             <Draggable
               key={image.id}
-              bounds="parent"
               default={{
                 x: image.position.x,
                 y: image.position.y,
                 width: get(image, 'dimensions.width', 400)
               }}
-              enableUserSelectHack
               lockAspectRatio
               onDragStop={this.handleDragEnd(image.id)}
               onResize={this.handleResize(image.id)}
+              onClick={event => {
+                if (event.target.tagName === 'IMG') {
+                  this.setState({ selected: image.id })
+                }
+              }}
             >
-              <div>
+              <div className="image">
                 <img
                   alt=""
                   style={{
+                    display: 'block',
                     border:
-                      this.state.selected.id === image.id
+                      this.state.selected === image.id
                         ? '2px solid blue'
                         : '1px solid #ddd'
-                  }}
-                  onClick={() => {
-                    this.setState({
-                      selected: image
-                    })
                   }}
                   draggable="false"
                   src={image.href}
                 />
-                <Caption
-                  onMouseDown={event => {
-                    event.stopPropagation()
-                    event.preventDefault()
-                    event.target.focus()
-                  }}
-                  onBlur={event => {
-                    if (image.caption !== event.target.value) {
-                      this.updateImage(image.id)('caption', event.target.value)
-                    }
-                  }}
-                  defaultValue={image.caption}
-                  placeholder="Add caption..."
-                />
+                {image.caption || this.state.selected === image.id ? (
+                  <Caption
+                    className="caption"
+                    onMouseDown={event => {
+                      event.stopPropagation()
+                      event.preventDefault()
+                      event.target.focus()
+                    }}
+                    onBlur={event => {
+                      if (image.caption !== event.target.value) {
+                        this.updateImage(image.id)(
+                          'caption',
+                          event.target.value
+                        )
+                      }
+                    }}
+                    defaultValue={image.caption}
+                    placeholder="Add caption..."
+                  />
+                ) : null}
               </div>
             </Draggable>
           ))}
