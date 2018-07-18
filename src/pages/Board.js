@@ -82,9 +82,13 @@ const BoardDescription = BoardName.extend`
   }
 `
 
-const Caption = styled(AutosizeInput)`
+const Caption = styled(AutosizeInput).attrs({
+  style: {
+    display: 'flex'
+  }
+})`
+  justify-content: center;
   margin-top: 8px;
-  margin-left: 8px;
 
   input {
     display: block;
@@ -94,9 +98,10 @@ const Caption = styled(AutosizeInput)`
     font-size: 15px;
     font-weight: bold;
     color: #7b81a2;
-    text-align: left;
+    text-align: center;
     width: 100%;
     left: 0;
+    right: 0;
     font-style: italic;
     font-family: var(--font);
   }
