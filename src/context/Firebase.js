@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { userPropTypes } from '../prop-types'
-import { queries, setDefaultState, COLLECTION } from '../services/queries'
+import { queries, setDefaultState, DOC, COLLECTION } from '../services/queries'
 
 const defaultState = {}
 
@@ -11,7 +11,8 @@ const { Provider, Consumer } = React.createContext(defaultState)
 
 class FirebaseProvider extends Component {
   static propTypes = {
-    user: userPropTypes
+    user: userPropTypes,
+    children: PropTypes.any.isRequired
   }
 
   static defaultProps = {
@@ -32,7 +33,8 @@ class FirebaseProvider extends Component {
     const actions = {
       subscribe: this.subscribe,
       unsubscribe: this.unsubscribe,
-      setGlobalLoadingState: this.setGlobalLoadingState
+      setGlobalLoadingState: this.setGlobalLoadingState,
+      documentExists: this.documentExists
     }
 
     this.state = {
@@ -48,6 +50,7 @@ class FirebaseProvider extends Component {
   }
 
   componentWillUnmount() {
+    // Unsubscribe from all subscriptions
     Object.values(this.subscriptions).map(x => typeof x === 'function' && x())
   }
 
@@ -58,15 +61,28 @@ class FirebaseProvider extends Component {
 
     const { type } = queries[query]
 
+    const lastArg = args.slice().pop()
+    const callback = typeof lastArg === 'function' ? lastArg : () => {}
+
     this.setLoadingState(query, true)
 
     this.subscriptions[query] = queries[query]
       .get(this.props.user.uid, ...args)
-      .onSnapshot(
-        type === COLLECTION
-          ? this.setCollectionToState(query)
-          : this.setDocumentToState(query)
-      )
+      .onSnapshot(snapshot => {
+        if (type === DOC) {
+          const { exists } = snapshot
+
+          callback(exists)
+
+          if (!exists) return
+        }
+
+        return type === COLLECTION
+          ? this.setCollectionToState(query, snapshot)
+          : this.setDocumentToState(query, snapshot)
+      })
+
+    return this.subscriptions[query]
   }
 
   unsubscribe = query => {
@@ -91,7 +107,7 @@ class FirebaseProvider extends Component {
       loading
     })
 
-  setCollectionToState = key => snapshot =>
+  setCollectionToState = (key, snapshot) =>
     this.setState({
       loading: false,
       [key]: {
@@ -104,7 +120,7 @@ class FirebaseProvider extends Component {
       }
     })
 
-  setDocumentToState = key => snapshot =>
+  setDocumentToState = (key, snapshot) =>
     this.setState({
       loading: false,
       [key]: {
@@ -113,10 +129,6 @@ class FirebaseProvider extends Component {
         data: snapshot.data() || {}
       }
     })
-
-  static propTypes = {
-    children: PropTypes.any.isRequired
-  }
 
   render() {
     return <Provider value={this.state}>{this.props.children}</Provider>

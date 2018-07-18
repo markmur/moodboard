@@ -9,7 +9,7 @@ import Switch from 'react-switch'
 import firebase, { db, storage } from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
-import { storePropTypes, userPropTypes } from '../prop-types'
+import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
 import { get } from '../services/utils'
 
 const Overlay = styled.div.attrs({
@@ -115,6 +115,10 @@ const Caption = styled(AutosizeInput).attrs({
 `
 
 class Board extends Component {
+  static propTypes = {
+    history: historyPropTypes.isRequired
+  }
+
   state = {
     loading: true,
     selected: null,
@@ -129,10 +133,13 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    // Todo redirect to /boards if board is not found
+    const { store } = this.props
 
-    this.props.store.subscribe('board', this.boardId)
-    this.props.store.subscribe('images', this.boardId)
+    store.subscribe('board', this.boardId, exists => {
+      if (!exists) this.props.history.replace('/boards')
+
+      store.subscribe('images', this.boardId)
+    })
   }
 
   componentWillUnmount() {
@@ -224,11 +231,13 @@ class Board extends Component {
 
   deleteImage = image => () => {
     try {
+      // Delete image reference from board
       db.collection('boards')
         .doc(this.boardId)
         .collection('images')
         .doc(image.id)
         .delete()
+      // Delete image from storage
       storage()
         .refFromURL(image.href)
         .delete()
