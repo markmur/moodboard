@@ -32,6 +32,16 @@ const Description = styled.p`
   color: ${p => p.theme.colors.gray};
 `
 
+const Public = styled.small.attrs({
+  children: 'Public'
+})`
+  margin-top: 5px;
+  display: block;
+  visibility: ${p => (p.public ? 'visible' : 'hidden')};
+  color: blue;
+  font-weight: bold;
+`
+
 class Boards extends Component {
   componentDidMount() {
     this.props.store.subscribe('boards')
@@ -95,6 +105,7 @@ class Boards extends Component {
                     <div>
                       <h2>{board.name}</h2>
                       <Description>{board.description}</Description>
+                      <Public public={board.public} />
                     </div>
 
                     <Trash onClick={this.handleBoardDelete(board.id)} />
@@ -125,6 +136,7 @@ class Boards extends Component {
                       <div>
                         <h2>{board.name}</h2>
                         <Description>{board.description}</Description>
+                        <Public public={board.public} />
                       </div>
                     </Link>
                   </Board>

@@ -2,46 +2,12 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { db } from '../services/firebase'
 import { userPropTypes } from '../prop-types'
+import { queries, setDefaultState, COLLECTION } from '../services/queries'
 
 const defaultState = {}
 
 const { Provider, Consumer } = React.createContext(defaultState)
-
-const COLLECTION = 'collection'
-const DOC = 'doc'
-
-const queries = {
-  boards: {
-    get: uid => db.collection('boards').where(`members.${uid}`, '==', true),
-    type: COLLECTION
-  },
-  following: {
-    get: uid => db.collection('boards').where(`followers.${uid}`, '==', true),
-    type: COLLECTION
-  },
-  board: {
-    get: (uid, id) => db.collection('boards').doc(id),
-    type: DOC
-  },
-  images: {
-    get: (uid, id) =>
-      db
-        .collection('boards')
-        .doc(id)
-        .collection('images'),
-    type: COLLECTION
-  }
-}
-
-const setDefaultState = (key, type) => ({
-  [key]: {
-    loading: false,
-    hasData: false,
-    data: type === COLLECTION ? [] : {}
-  }
-})
 
 class FirebaseProvider extends Component {
   static propTypes = {

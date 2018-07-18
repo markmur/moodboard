@@ -82,6 +82,21 @@ const BoardDescription = BoardName.extend`
   }
 `
 
+const Caption = styled(AutosizeInput)`
+  input {
+    outline: none;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: bold;
+    color: #222;
+    text-align: left;
+    width: 100%;
+    font-style: italic;
+    font-family: var(--font);
+  }
+`
+
 class Board extends Component {
   state = {
     loading: true,
@@ -168,6 +183,20 @@ class Board extends Component {
     try {
       db.collection('boards')
         .doc(this.boardId)
+        .update({
+          [field]: value
+        })
+    } catch (err) {
+      console.log('Error updating board name', { err })
+    }
+  }
+
+  updateImage = id => (field, value) => {
+    try {
+      db.collection('boards')
+        .doc(this.boardId)
+        .collection('images')
+        .doc(id)
         .update({
           [field]: value
         })
@@ -280,12 +309,14 @@ class Board extends Component {
           {images.map(image => (
             <Draggable
               key={image.id}
-              lockAspectRatio
+              bounds="parent"
               default={{
                 x: image.position.x,
                 y: image.position.y,
                 width: get(image, 'dimensions.width', 400)
               }}
+              enableUserSelectHack
+              lockAspectRatio
               onDragStop={this.handleDragEnd(image.id)}
               onResize={this.handleResize(image.id)}
             >
@@ -305,6 +336,20 @@ class Board extends Component {
                   }}
                   draggable="false"
                   src={image.href}
+                />
+                <Caption
+                  onMouseDown={event => {
+                    event.stopPropagation()
+                    event.preventDefault()
+                    event.target.focus()
+                  }}
+                  onBlur={event => {
+                    if (image.caption !== event.target.value) {
+                      this.updateImage(image.id)('caption', event.target.value)
+                    }
+                  }}
+                  defaultValue={image.caption}
+                  placeholder="Add caption..."
                 />
               </div>
             </Draggable>
