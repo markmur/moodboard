@@ -216,4 +216,4 @@ const fb = new FirebaseClient()
 
 export default fb
 
-export { auth, db }
+export { auth, db, storage }

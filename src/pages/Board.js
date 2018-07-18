@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import AutosizeInput from 'react-input-autosize'
 import { Flex, Box } from 'grid-styled'
 import Switch from 'react-switch'
-import firebase, { db } from '../services/firebase'
+import firebase, { db, storage } from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
 import { storePropTypes, userPropTypes } from '../prop-types'
@@ -80,6 +80,13 @@ const BoardDescription = BoardName.extend`
     font-weight: normal;
     color: ${p => p.theme.colors.gray};
   }
+`
+
+const Image = styled.img.attrs({
+  alt: '',
+  draggable: false
+})`
+  border: ${p => (p.selected ? '2px solid blue' : '1px solid #ddd')};
 `
 
 const Caption = styled(AutosizeInput).attrs({
@@ -201,7 +208,7 @@ class Board extends Component {
     }
   }
 
-  updateImage = id => (field, value) => {
+  updateImage = (id, field, value) => {
     try {
       db.collection('boards')
         .doc(this.boardId)
@@ -212,6 +219,21 @@ class Board extends Component {
         })
     } catch (err) {
       console.log('Error updating board name', { err })
+    }
+  }
+
+  deleteImage = image => () => {
+    try {
+      db.collection('boards')
+        .doc(this.boardId)
+        .collection('images')
+        .doc(image.id)
+        .delete()
+      storage()
+        .refFromURL(image.href)
+        .delete()
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -235,6 +257,18 @@ class Board extends Component {
       this.setState({
         [field]: value
       })
+    }
+  }
+
+  handleCaptionClick = event => {
+    event.stopPropagation()
+    event.preventDefault()
+    event.target.focus()
+  }
+
+  handleCaptionChange = (image = {}) => event => {
+    if (image.caption !== event.target.value) {
+      this.updateImage(image.id, 'caption', event.target.value)
     }
   }
 
@@ -340,35 +374,35 @@ class Board extends Component {
                 }
               }}
             >
-              <div className="image">
-                <img
-                  alt=""
-                  style={{
-                    display: 'block',
-                    border:
-                      this.state.selected === image.id
-                        ? '2px solid blue'
-                        : '1px solid #ddd'
-                  }}
-                  draggable="false"
+              <div className="image" style={{ position: 'relative' }}>
+                {this.state.selected === image.id && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '0',
+                      display: 'flex',
+                      width: '100%',
+                      color: 'white',
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      justifyContent: 'flex-end',
+                      background: 'blue',
+                      padding: '6px',
+                      cursor: 'default'
+                    }}
+                  >
+                    <a onClick={this.deleteImage(image)}>Delete</a>
+                  </div>
+                )}
+                <Image
+                  selected={this.state.selected === image.id}
                   src={image.href}
                 />
                 {image.caption || this.state.selected === image.id ? (
                   <Caption
                     className="caption"
-                    onMouseDown={event => {
-                      event.stopPropagation()
-                      event.preventDefault()
-                      event.target.focus()
-                    }}
-                    onBlur={event => {
-                      if (image.caption !== event.target.value) {
-                        this.updateImage(image.id)(
-                          'caption',
-                          event.target.value
-                        )
-                      }
-                    }}
+                    onMouseDown={this.handleCaptionClick}
+                    onBlur={this.handleCaptionChange(image)}
                     defaultValue={image.caption}
                     placeholder="Add caption..."
                   />
