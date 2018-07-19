@@ -4,13 +4,20 @@ import Draggable from 'react-rnd'
 import Dropzone from 'react-dropzone'
 import styled from 'styled-components'
 import AutosizeInput from 'react-input-autosize'
+import pluralize from 'pluralize'
 import { Flex, Box } from 'grid-styled'
+import memoize from 'memoize-one'
 import Switch from 'react-switch'
 import firebase, { db, storage } from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
 import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
-import { get } from '../services/utils'
+import {
+  get,
+  getImageDimensions,
+  calculateDimensions,
+  DEFAULT_WIDTH
+} from '../services/utils'
 
 const Overlay = styled.div.attrs({
   children: 'Drop files to upload'
@@ -65,6 +72,7 @@ const BoardName = styled(AutosizeInput).attrs({
   }
 })`
   input {
+    color: black;
     display: block;
     background: transparent;
     border: none;
@@ -161,6 +169,9 @@ class Board extends Component {
       if (!exists) this.props.history.replace('/boards')
 
       store.subscribe('images', this.boardId)
+      store.subscribe('comments', this.boardId, comments => {
+        console.log(comments)
+      })
     })
   }
 
@@ -180,10 +191,12 @@ class Board extends Component {
       })
   }
 
-  onDrop = (acceptedFiles, rejectedFiles, event) => {
+  onDrop = async (acceptedFiles, rejectedFiles, event) => {
     this.props.store.setGlobalLoadingState(true)
 
-    const { pageX, pageY } = event.target
+    event.persist()
+
+    const { pageX, pageY } = event
 
     this.setState(({ images }) => ({
       images: [
@@ -198,20 +211,32 @@ class Board extends Component {
       ]
     }))
 
-    const uploads = acceptedFiles.map(file =>
-      firebase
-        .addImageToBoard(this.boardId, file, {
-          name: file.name
-        })
-        .catch(err => {
-          console.log(err)
-          this.props.store.setGlobalLoadingState(false)
-        })
+    Promise.all(
+      acceptedFiles.map(
+        file =>
+          new Promise((resolve, reject) =>
+            getImageDimensions(file.preview)
+              .then(calculateDimensions)
+              .then(({ width, height }) =>
+                firebase
+                  .addImageToBoard(this.boardId, file, {
+                    name: file.name,
+                    width,
+                    height,
+                    x: pageX,
+                    y: pageY
+                  })
+                  .catch(reject)
+              )
+          )
+      )
     )
-
-    Promise.all(uploads).then(() =>
-      this.props.store.setGlobalLoadingState(false)
-    )
+      .then(() => {
+        this.props.store.setGlobalLoadingState(false)
+      })
+      .catch(() => {
+        this.props.store.setGlobalLoadingState(false)
+      })
   }
 
   handleDragEnd = imageId => (event, { x, y }) => {
@@ -292,10 +317,21 @@ class Board extends Component {
   }
 
   handleCaptionClick = event => {
+    if (!this.userHasPermission(this.props)) return
+
     event.stopPropagation()
     event.preventDefault()
     event.target.focus()
   }
+
+  userHasPermission = memoize(props => {
+    const { store, user } = props
+    const { uid } = user
+
+    const board = store.board.data
+
+    return get(board, 'createdBy') === uid || get(board, 'members', [])[uid]
+  })
 
   handleCaptionChange = (image = {}) => event => {
     if (image.caption !== event.target.value) {
@@ -303,11 +339,26 @@ class Board extends Component {
     }
   }
 
+  createCommentsMap = memoize(comments => {
+    return comments.reduce((state, comment) => {
+      if (comment.imageId in state) {
+        state[comment.imageId].push(comment)
+      } else {
+        state[comment.imageId] = [comment]
+      }
+      return state
+    }, {})
+  })
+
   render() {
     const { store, user } = this.props
 
     const board = store.board.data
     const images = store.images.data
+    const comments = this.createCommentsMap(store.comments.data)
+    const userHasPermission = this.userHasPermission(this.props)
+
+    console.log({ comments })
 
     return (
       <BoardContainer
@@ -323,6 +374,7 @@ class Board extends Component {
             <Flex justify="space-between" align="center">
               <div>
                 <BoardName
+                  disabled={!userHasPermission}
                   defaultValue={board.name}
                   placeholder={
                     store.board.loading ? 'Loading...' : 'Board Name'
@@ -332,10 +384,11 @@ class Board extends Component {
                 />
 
                 <BoardDescription
+                  disabled={!userHasPermission}
                   placeholder={store.board.loading ? '' : 'No description'}
                   onChange={this.handleChange('description')}
                   onBlur={this.handleBlur('description')}
-                  value={board.description}
+                  defaultValue={board.description}
                 />
               </div>
               <Flex justify="space-between" align="center">
@@ -347,7 +400,7 @@ class Board extends Component {
                   <Switch
                     height={23}
                     width={54}
-                    disabled={board.createdBy !== user.uid}
+                    disabled={!userHasPermission}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     checked={Boolean(board.public)}
@@ -356,10 +409,9 @@ class Board extends Component {
                     onChange={val => this.updateBoard('public', Boolean(val))}
                   />
                 </Box>
-                {board.createdBy === user.uid ? (
-                  <Button onClick={() => this.dropzone.open()}>
-                    <a>Upload</a>
-                  </Button>
+
+                {userHasPermission ? (
+                  <Button onClick={() => this.dropzone.open()}>Upload</Button>
                 ) : (
                   <Button
                     hoverText={this.following(board, user.uid) && 'Unfollow'}
@@ -392,18 +444,28 @@ class Board extends Component {
               default={{
                 x: image.position.x,
                 y: image.position.y,
-                width: get(image, 'dimensions.width', 400)
+                width: get(image, 'dimensions.width', DEFAULT_WIDTH)
               }}
+              disableDragging={!userHasPermission}
               lockAspectRatio
               onDragStop={this.handleDragEnd(image.id)}
               onResize={this.handleResize(image.id)}
               onClick={event => {
-                if (event.target.tagName === 'IMG') {
+                if (
+                  event.target.tagName === 'IMG' &&
+                  board.createdBy === user.uid
+                ) {
                   this.setState({ selected: image.id })
                 }
               }}
             >
               <div className="image" style={{ position: 'relative' }}>
+                {Array.isArray(comments[image.id]) &&
+                  comments[image.id].length > 0 && (
+                    <strong>
+                      {pluralize('Comment', comments[image.id].length, true)}
+                    </strong>
+                  )}
                 {this.state.selected === image.id && (
                   <ImageToolbar>
                     <a onClick={this.deleteImage(image)}>Delete</a>

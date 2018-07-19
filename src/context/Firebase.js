@@ -68,13 +68,19 @@ class FirebaseProvider extends Component {
 
     this.subscriptions[query] = queries[query]
       .get(this.props.user.uid, ...args)
-      .onSnapshot(snapshot => {
+      .onSnapshot((snapshot, err) => {
+        if (err) console.log('err from snapshot watcher', err)
+
         if (type === DOC) {
           const { exists } = snapshot
 
           callback(exists)
 
           if (!exists) return
+        }
+
+        if (type === COLLECTION) {
+          callback(snapshot.docs.map(x => x.data()))
         }
 
         return type === COLLECTION

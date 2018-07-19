@@ -44,8 +44,11 @@ const Public = styled.small.attrs({
 
 class Boards extends Component {
   componentDidMount() {
-    this.props.store.subscribe('boards')
-    this.props.store.subscribe('following')
+    const { store } = this.props
+
+    store.setGlobalLoadingState(true)
+    store.subscribe('boards')
+    store.subscribe('following')
   }
 
   componentWillUnmount() {

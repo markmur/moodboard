@@ -143,10 +143,12 @@ class FirebaseClient {
     console.log(percent + '% done')
   }
 
-  addImageToBoard(boardId, file, { name }) {
+  addImageToBoard(boardId, file, { name, x, y, width, height }) {
     const url = `images/${name}`
     const ref = storage().ref(url)
-    const upload = ref.put(file)
+    const upload = ref.put(file, {
+      cacheControl: 'private, max-age=31536000'
+    })
 
     return new Promise((resolve, reject) => {
       upload.on(firebase.storage.TaskEvent.STATE_CHANGED, {
@@ -161,15 +163,36 @@ class FirebaseClient {
             .collection(IMAGES)
             .doc()
 
+          let dimensions = {}
+
+          if (width && height) {
+            dimensions = {
+              width,
+              height
+            }
+          }
+
+          console.log({
+            id: newReference.id,
+            name,
+            href: referenceUrl,
+            position: {
+              x: x || 0,
+              y: y || 0
+            },
+            dimensions
+          })
+
           newReference
             .set({
               id: newReference.id,
               name,
               href: referenceUrl,
               position: {
-                x: 0,
-                y: 0
-              }
+                x: x || 0,
+                y: y || 0
+              },
+              dimensions
             })
             .then(resolve)
         }

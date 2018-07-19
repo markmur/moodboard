@@ -3,25 +3,37 @@ import { db } from './firebase'
 export const COLLECTION = 'collection'
 export const DOC = 'doc'
 
+const BOARDS = 'boards'
+const IMAGES = 'images'
+const COMMENTS = 'comments'
+
 export const queries = {
   boards: {
-    get: uid => db.collection('boards').where(`members.${uid}`, '==', true),
+    get: uid => db.collection(BOARDS).where(`members.${uid}`, '==', true),
     type: COLLECTION
   },
   following: {
-    get: uid => db.collection('boards').where(`followers.${uid}`, '==', true),
+    get: uid => db.collection(BOARDS).where(`followers.${uid}`, '==', true),
     type: COLLECTION
   },
   board: {
-    get: (uid, id) => db.collection('boards').doc(id),
+    get: (uid, id) => db.collection(BOARDS).doc(id),
     type: DOC
   },
   images: {
     get: (uid, id) =>
       db
-        .collection('boards')
+        .collection(BOARDS)
         .doc(id)
-        .collection('images'),
+        .collection(IMAGES),
+    type: COLLECTION
+  },
+  comments: {
+    get: (uid, id) =>
+      db
+        .collection(BOARDS)
+        .doc(id)
+        .collection(COMMENTS),
     type: COLLECTION
   }
 }
