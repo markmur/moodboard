@@ -6,6 +6,7 @@ import { Consumer } from '../context/Auth'
 import firebase from '../services/firebase'
 import { Content, Truncate } from '../styles'
 import BoardIcon from '../icons/board'
+import Icon from '../components/Icon'
 
 import { storePropTypes } from '../prop-types'
 
@@ -109,7 +110,12 @@ class Boards extends Component {
                       <Public public={board.public} />
                     </div>
 
-                    <div onClick={this.handleBoardDelete(board.id)}>Delete</div>
+                    <Icon
+                      type="trash"
+                      color="gray"
+                      fontSize={20}
+                      onClick={this.handleBoardDelete(board.id)}
+                    />
                   </Link>
                 </Board>
               </Box>
