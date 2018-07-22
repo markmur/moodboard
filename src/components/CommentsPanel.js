@@ -2,54 +2,42 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Flex, Box } from 'grid-styled'
+import Textarea from 'react-textarea-autosize'
 import firebase from '../services/firebase'
 import { Avatar } from '../styles'
 import { get } from '../services/utils'
 import { SubmitButton } from './Button'
+import SlidePanel from './SlidePanel'
 
-const Sidebar = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  width: 400px;
-  height: 100vh;
-  right: 0;
-  top: 0;
-  background: white;
-  z-index: 10;
-  box-shadow: -10px 0 20px 0 rgba(0, 0, 2, 0.075);
-  transform: translateX(${p => (p.visible ? 0 : '100%')});
-  transition: transform 200ms ease-out;
+const StyledTextarea = styled(Textarea)`
+  width: 100%;
+  background: #f4f4f7;
+  border: 1px solid #eee;
+  font-size: 16px;
+  border-radius: 4px;
+  padding: 0.7em;
+  margin-right: 0.5em;
+  resize: none;
+`
 
-  header {
-    padding: 1.5em 2.5em;
-  }
+const Header = styled.header`
+  padding: 1.5em 2.5em;
+`
 
-  main {
-    background: #f4f4f7;
-    padding: 1.5em 0.5em;
-    flex: 1;
-    overflow: scroll;
-  }
+const Main = styled.main`
+  background: #f4f4f7;
+  padding: 1.5em 0.5em;
+  flex: 1;
+  overflow: scroll;
+`
 
-  footer {
-    padding: 1em;
+const Footer = styled.footer`
+  padding: 1em;
 
-    form {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-    }
-
-    input[type='text'] {
-      width: 100%;
-      background: #f4f4f7;
-      border: 1px solid #eee;
-      font-size: 16px;
-      border-radius: 4px;
-      padding: 0.7em;
-      margin-right: 0.5em;
-    }
+  form {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
   }
 `
 
@@ -89,6 +77,10 @@ const Message = styled(({ comment, align, className, showUser, canDelete }) => {
     </li>
   )
 })`
+  &:hover a {
+    display: block;
+  }
+
   strong,
   small {
     display: block;
@@ -150,8 +142,8 @@ class CommentsPanel extends Component {
     const { user, comments } = this.props
 
     return (
-      <Sidebar visible={this.props.visible}>
-        <header>
+      <SlidePanel visible={this.props.visible}>
+        <Header>
           <h1 onClick={this.props.onClose}>Comments</h1>
           <p>
             Leave comments on an image to talk to other members or leave notes
@@ -160,9 +152,9 @@ class CommentsPanel extends Component {
               😸
             </span>
           </p>
-        </header>
+        </Header>
 
-        <main>
+        <Main>
           <ul>
             {comments.map((comment, i) => (
               <Message
@@ -175,9 +167,9 @@ class CommentsPanel extends Component {
               />
             ))}
           </ul>
-        </main>
+        </Main>
 
-        <footer>
+        <Footer>
           <form
             ref={c => {
               this.form = c
@@ -186,11 +178,11 @@ class CommentsPanel extends Component {
             autofill="off"
             onSubmit={this.props.onCreateComment}
           >
-            <input name="comment" type="text" placeholder="Your message..." />
+            <StyledTextarea name="comment" placeholder="Your message..." />
             <SubmitButton value="Send" />
           </form>
-        </footer>
-      </Sidebar>
+        </Footer>
+      </SlidePanel>
     )
   }
 }
