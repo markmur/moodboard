@@ -53,17 +53,21 @@ const Sidebar = styled.div`
   }
 `
 
-const Message = styled(({ comment, align, className, showUser }) => {
+const Message = styled(({ comment, align, className, showUser, canDelete }) => {
   const right = align === 'right'
   const margin = {
     mr: !right && 2,
     ml: right && 2
   }
 
-  const deleteButton = (
-    <a type="button">
-      <strong onClick={() => firebase.deleteComment(comment.id)}>Delete</strong>
-    </a>
+  const deleteButton = canDelete && (
+    <div>
+      <a type="button">
+        <strong onClick={() => firebase.deleteComment(comment.id)}>
+          Delete
+        </strong>
+      </a>
+    </div>
   )
 
   return (
@@ -165,6 +169,7 @@ class CommentsPanel extends Component {
                 key={comment.id}
                 primary={get(comment, 'from.uid') === user.uid}
                 showUser={this.showUser(user.uid, comments[i - 1], comment)}
+                canDelete={comment.from.uid === user.uid}
                 align={comment.from.uid === user.uid ? 'right' : 'left'}
                 comment={comment}
               />
