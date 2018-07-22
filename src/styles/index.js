@@ -7,6 +7,21 @@ export const Avatar = styled.img.attrs({
   width: p => p.size || 35
 })`
   border-radius: 50%;
+  flex: 0 0 auto;
+`
+
+export const Truncate = styled(({ children, className }) => (
+  <span className={className}>
+    <span>{children}</span>
+  </span>
+))`
+  overflow: hidden;
+
+  > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `
 
 export const Logo = styled(props => (

@@ -3,7 +3,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { userPropTypes } from '../prop-types'
-import { queries, setDefaultState, DOC, COLLECTION } from '../services/queries'
+import { get } from '../services/utils'
+import { queries, setDefaultState } from '../services/queries'
+import { DOC, COLLECTION } from '../services/constants'
 
 const defaultState = {}
 
@@ -74,13 +76,13 @@ class FirebaseProvider extends Component {
         if (type === DOC) {
           const { exists } = snapshot
 
-          callback(exists)
+          callback(snapshot.data())
 
           if (!exists) return
         }
 
         if (type === COLLECTION) {
-          callback(snapshot.docs.map(x => x.data()))
+          callback(get(snapshot, 'docs', []).map(x => x.data()))
         }
 
         return type === COLLECTION
@@ -118,8 +120,8 @@ class FirebaseProvider extends Component {
       loading: false,
       [key]: {
         loading: false,
-        hasData: snapshot.docs.length > 0,
-        data: snapshot.docs.map(x => ({
+        hasData: get(snapshot, 'docs', []).length > 0,
+        data: get(snapshot, 'docs', []).map(x => ({
           ...x.data(),
           id: x.id
         }))

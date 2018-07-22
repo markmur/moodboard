@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { withLastLocation } from 'react-router-last-location'
 import * as firebaseui from 'firebaseui'
-import firebase, { auth } from '../services/firebase'
+import firebase from '../services/firebase'
 import { Logo } from '../styles'
 import 'firebaseui/dist/firebaseui.css'
 
@@ -32,20 +32,22 @@ class Login extends Component {
     let ui = firebaseui.auth.AuthUI.getInstance()
 
     if (!ui) {
-      ui = new firebaseui.auth.AuthUI(auth())
+      ui = new firebaseui.auth.AuthUI(firebase.auth())
     }
 
     ui.start('#firebaseui-auth-container', {
       signInFlow: 'popup',
       signInOptions: [
-        auth.GoogleAuthProvider.PROVIDER_ID,
-        auth.GithubAuthProvider.PROVIDER_ID,
-        auth.TwitterAuthProvider.PROVIDER_ID
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.GithubAuthProvider.PROVIDER_ID,
+        firebase.auth.TwitterAuthProvider.PROVIDER_ID
       ],
       signInSuccessUrl: lastLocation ? lastLocation.pathname : '/',
       callbacks: {
         signInSuccessWithAuthResult: async authResult => {
           const { user } = authResult
+
+          console.log({ user })
 
           await firebase.createOrUpdateUser(user)
         },

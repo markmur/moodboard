@@ -17,6 +17,34 @@ body {
   overflow-x: hidden;
 }
 
+::selection {
+  background: #79ffe1;
+}
+
+h2 {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+h2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  display: block;
+  height: 100%;
+  background: #79ffe1;
+  z-index: -1;
+  transition: width 200ms ease-out;
+}
+
+a:hover h2::before {
+  width: 100%;
+}
+
 input,
 textarea {
   font-family: var(--font);
@@ -44,6 +72,7 @@ a:active {
 ul,
 ol {
   list-style-type: none;
+  padding: 0;
 }
 
 h1,

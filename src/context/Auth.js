@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unused-state */
+
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { withLastLocation } from 'react-router-last-location'
-import { auth } from '../services/firebase'
+import firebase from '../services/firebase'
 
 const defaultAuthContext = {
   authenticated: false,
@@ -16,22 +18,33 @@ class FirebaseAuthProvider extends Component {
   state = defaultAuthContext
 
   componentDidMount() {
-    this.removeAuthListener = auth().onAuthStateChanged(user => {
-      this.setState(
-        user
-          ? {
+    this.removeAuthListener = firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        this.setState(defaultAuthContext, this.redirect)
+        return
+      }
+
+      this.removeUserListener = firebase
+        .getUserById(user.uid)
+        .onSnapshot(profile =>
+          this.setState(
+            {
               loading: false,
               authenticated: true,
-              user
-            }
-          : defaultAuthContext,
-        this.redirect
-      )
+              user: {
+                ...profile.data(),
+                uid: user.uid
+              }
+            },
+            this.redirect
+          )
+        )
     })
   }
 
   componentWillUnmount() {
     this.removeAuthListener()
+    this.removeUserListener()
   }
 
   redirect() {

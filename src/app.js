@@ -28,6 +28,9 @@ class App extends Component {
     return (
       <ThemeProvider theme={theme}>
         <LastLocationProvider>
+          {location => {
+            console.log({ location })
+          }}
           <AuthProvider>
             <AuthConsumer>
               {({ user }) => (

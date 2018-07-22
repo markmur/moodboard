@@ -1,39 +1,25 @@
-import { db } from './firebase'
-
-export const COLLECTION = 'collection'
-export const DOC = 'doc'
-
-const BOARDS = 'boards'
-const IMAGES = 'images'
-const COMMENTS = 'comments'
+import firebase from './firebase'
+import { COLLECTION, DOC } from './constants'
 
 export const queries = {
   boards: {
-    get: uid => db.collection(BOARDS).where(`members.${uid}`, '==', true),
+    get: uid => firebase.getBoards(uid),
     type: COLLECTION
   },
   following: {
-    get: uid => db.collection(BOARDS).where(`followers.${uid}`, '==', true),
+    get: uid => firebase.getFollowingBoards(uid),
     type: COLLECTION
   },
   board: {
-    get: (uid, id) => db.collection(BOARDS).doc(id),
+    get: (uid, id) => firebase.getBoard(id),
     type: DOC
   },
   images: {
-    get: (uid, id) =>
-      db
-        .collection(BOARDS)
-        .doc(id)
-        .collection(IMAGES),
+    get: (uid, id) => firebase.getImagesForBoard(id),
     type: COLLECTION
   },
   comments: {
-    get: (uid, id) =>
-      db
-        .collection(BOARDS)
-        .doc(id)
-        .collection(COMMENTS),
+    get: (uid, id) => firebase.getCommentsForBoard(id),
     type: COLLECTION
   }
 }

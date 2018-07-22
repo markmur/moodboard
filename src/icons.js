@@ -1,5 +1,5 @@
-import trash from 'react-icons/lib/io/trash-b';
-import styled from 'styled-components';
+import trash from 'react-icons/lib/io/trash-b'
+import styled from 'styled-components'
 
 export const Trash = styled(trash)`
   cursor: pointer;
@@ -9,4 +9,4 @@ export const Trash = styled(trash)`
   &:hover {
     color: #888;
   }
-`;
+`

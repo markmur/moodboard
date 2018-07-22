@@ -4,13 +4,15 @@ import Draggable from 'react-rnd'
 import Dropzone from 'react-dropzone'
 import styled from 'styled-components'
 import AutosizeInput from 'react-input-autosize'
-import pluralize from 'pluralize'
 import { Flex, Box } from 'grid-styled'
 import memoize from 'memoize-one'
 import Switch from 'react-switch'
-import firebase, { db, storage } from '../services/firebase'
+import { TiMessages as Messages } from 'react-icons/lib/ti'
+import pluralize from 'pluralize'
+import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
+import CommentsPanel from '../components/CommentsPanel'
 import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
 import {
   get,
@@ -155,7 +157,7 @@ class Board extends Component {
     name: '',
     description: '',
     images: [],
-    profiles: []
+    commentsPanelOpen: false
   }
 
   get boardId() {
@@ -165,12 +167,12 @@ class Board extends Component {
   componentDidMount() {
     const { store } = this.props
 
-    store.subscribe('board', this.boardId, exists => {
-      if (!exists) this.props.history.replace('/boards')
+    store.subscribe('board', this.boardId, board => {
+      if (!board) this.props.history.replace('/boards')
 
       store.subscribe('images', this.boardId)
       store.subscribe('comments', this.boardId, comments => {
-        console.log(comments)
+        console.log({ comments })
       })
     })
   }
@@ -178,17 +180,6 @@ class Board extends Component {
   componentWillUnmount() {
     this.props.store.unsubscribe('board')
     this.props.store.unsubscribe('images')
-  }
-
-  getMembers(members) {
-    firebase
-      .getBoardMembers(members)
-      .then(profiles => {
-        this.setState({ profiles })
-      })
-      .catch(err => {
-        console.log(err)
-      })
   }
 
   onDrop = async (acceptedFiles, rejectedFiles, event) => {
@@ -250,44 +241,35 @@ class Board extends Component {
     })
   }
 
-  updateBoard = (field, value) => {
+  updateBoard = async (field, value) => {
+    if (!field) {
+      return Promise.reject(new Error(`'field' ${field} is not a valid field`))
+    }
+
+    if (value === null || typeof value === 'undefined') {
+      return Promise.reject(
+        new Error(`'value' ${value} should not be null or undefined`)
+      )
+    }
+
     try {
-      db.collection('boards')
-        .doc(this.boardId)
-        .update({
-          [field]: value
-        })
+      await firebase.updateBoard(this.boardId, field, value)
+    } catch (err) {
+      console.log(`Error updating ${field}: ${value}`, { err })
+    }
+  }
+
+  updateImage = async (id, field, value) => {
+    try {
+      await firebase.updateImage(this.boardId, id, field, value)
     } catch (err) {
       console.log('Error updating board name', { err })
     }
   }
 
-  updateImage = (id, field, value) => {
+  deleteImage = image => async () => {
     try {
-      db.collection('boards')
-        .doc(this.boardId)
-        .collection('images')
-        .doc(id)
-        .update({
-          [field]: value
-        })
-    } catch (err) {
-      console.log('Error updating board name', { err })
-    }
-  }
-
-  deleteImage = image => () => {
-    try {
-      // Delete image reference from board
-      db.collection('boards')
-        .doc(this.boardId)
-        .collection('images')
-        .doc(image.id)
-        .delete()
-      // Delete image from storage
-      storage()
-        .refFromURL(image.href)
-        .delete()
+      await firebase.deleteImage(this.boardId, image)
     } catch (err) {
       console.error(err)
     }
@@ -297,9 +279,14 @@ class Board extends Component {
     board && board.followers && uid in board.followers && board.followers[uid]
 
   followBoard = () => {
-    const { user } = this.props
+    const { user, store } = this.props
 
-    firebase.followBoard(this.boardId, user.uid)
+    const following = get(store.board.data, 'followers', {})[user.uid]
+
+    return firebase[following ? 'unfollowBoard' : 'followBoard'](
+      this.boardId,
+      user.uid
+    )
   }
 
   handleBlur = field => () => {
@@ -307,13 +294,13 @@ class Board extends Component {
   }
 
   handleChange = field => event => {
-    const { value } = event.target
+    const value = event.target.value.trim()
 
-    if (value) {
-      this.setState({
-        [field]: value
-      })
-    }
+    if (!field || !value || value.length <= 0) return
+
+    this.setState({
+      [field]: value
+    })
   }
 
   handleCaptionClick = event => {
@@ -350,6 +337,31 @@ class Board extends Component {
     }, {})
   })
 
+  createComment = event => {
+    const { user, store } = this.props
+    event.preventDefault()
+
+    if (!event.target.comment) return
+
+    const message = event.target.comment.value.trim()
+
+    if (!message || message.length <= 0) return
+
+    firebase.createComment({
+      imageId: store.images.data[0].id,
+      boardId: this.boardId,
+      message,
+      from: {
+        uid: user.uid,
+        name: user.displayName,
+        photoURL: user.photoURL
+      }
+    })
+
+    // Reset input value
+    event.target.comment.value = ''
+  }
+
   render() {
     const { store, user } = this.props
 
@@ -357,8 +369,6 @@ class Board extends Component {
     const images = store.images.data
     const comments = this.createCommentsMap(store.comments.data)
     const userHasPermission = this.userHasPermission(this.props)
-
-    console.log({ comments })
 
     return (
       <BoardContainer
@@ -369,6 +379,20 @@ class Board extends Component {
             this.setState({ selected: null })
         }}
       >
+        {userHasPermission && (
+          <CommentsPanel
+            visible={this.state.commentsPanelOpen}
+            user={user}
+            comments={store.comments.data}
+            onCreateComment={this.createComment}
+            onClose={() =>
+              this.setState({
+                commentsPanelOpen: false
+              })
+            }
+          />
+        )}
+
         <Header>
           <Content>
             <Flex justify="space-between" align="center">
@@ -395,20 +419,51 @@ class Board extends Component {
                 <Box mr={4}>
                   <Avatars profiles={board.profiles} size={40} />
                 </Box>
+
+                <Flex
+                  mr={3}
+                  width="70px"
+                  alignItems="center"
+                  flexDirection="column"
+                >
+                  <Label>Followers</Label>
+                  <h2>
+                    {
+                      Object.values(get(board, 'followers', {})).filter(x => x)
+                        .length
+                    }
+                  </h2>
+                </Flex>
+
                 <Box mr={3} width="70px">
                   <Label>Public</Label>
-                  <Switch
-                    height={23}
-                    width={54}
-                    disabled={!userHasPermission}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    checked={Boolean(board.public)}
-                    offColor="#ddd"
-                    onColor="#0087ff"
-                    onChange={val => this.updateBoard('public', Boolean(val))}
-                  />
+                  <Box mb={2}>
+                    <Switch
+                      height={23}
+                      width={54}
+                      disabled={!userHasPermission}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      checked={Boolean(board.public)}
+                      offColor="#ddd"
+                      onColor="#0087ff"
+                      onChange={val => this.updateBoard('public', Boolean(val))}
+                    />
+                  </Box>
                 </Box>
+
+                {userHasPermission && (
+                  <Button
+                    mr={2}
+                    onClick={() =>
+                      this.setState({
+                        commentsPanelOpen: true
+                      })
+                    }
+                  >
+                    {pluralize('Comment', store.comments.data.length, true)}
+                  </Button>
+                )}
 
                 {userHasPermission ? (
                   <Button onClick={() => this.dropzone.open()}>Upload</Button>
@@ -418,7 +473,7 @@ class Board extends Component {
                     onClick={this.followBoard}
                     type={this.following(board, user.uid) && 'success'}
                   >
-                    {this.following(board, user.uid) ? 'Following' : 'Follow'}{' '}
+                    {this.following(board, user.uid) ? 'Following' : 'Follow'}
                   </Button>
                 )}
               </Flex>
@@ -462,9 +517,12 @@ class Board extends Component {
               <div className="image" style={{ position: 'relative' }}>
                 {Array.isArray(comments[image.id]) &&
                   comments[image.id].length > 0 && (
-                    <strong>
-                      {pluralize('Comment', comments[image.id].length, true)}
-                    </strong>
+                    <span>
+                      <span style={{ marginRight: 6 }}>
+                        <Messages size={20} />
+                      </span>
+                      {comments[image.id].length}
+                    </span>
                   )}
                 {this.state.selected === image.id && (
                   <ImageToolbar>

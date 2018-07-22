@@ -1,0 +1,37 @@
+2018-07-22T15:17:32.895452000 0.007274s notice: Recursively removing directory /Users/markmurray/apps/mood/rethinkdb_data/tmp
+2018-07-22T15:17:32.896515000 0.008340s notice: Initializing directory /Users/markmurray/apps/mood/rethinkdb_data
+2018-07-22T15:17:32.896589000 0.008410s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/Users/markmurray/apps/mood/rethinkdb_data' did not already exist or is empty.)
+2018-07-22T15:17:32.896633000 0.008455s notice: Running rethinkdb 2.3.6 (CLANG 9.0.0 (clang-900.0.37))...
+2018-07-22T15:17:32.900731000 0.012553s notice: Running on Darwin 17.5.0 x86_64
+2018-07-22T15:17:32.900790000 0.012611s notice: Loading data from directory /Users/markmurray/apps/mood/rethinkdb_data
+2018-07-22T15:17:32.959612000 0.071433s info: Automatically using cache size of 2514 MB
+2018-07-22T15:17:32.960195000 0.072016s notice: Listening for intracluster connections on port 29015
+2018-07-22T15:17:32.961990000 0.073811s notice: Listening for client driver connections on port 28015
+2018-07-22T15:17:32.962191000 0.074012s notice: Listening for administrative HTTP connections on port 8080
+2018-07-22T15:17:32.962196000 0.074016s notice: Listening on cluster addresses: 127.0.0.1, ::1
+2018-07-22T15:17:32.962203000 0.074024s notice: Listening on driver addresses: 127.0.0.1, ::1
+2018-07-22T15:17:32.962206000 0.074026s notice: Listening on http addresses: 127.0.0.1, ::1
+2018-07-22T15:17:32.962213000 0.074033s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-07-22T15:17:32.962219000 0.074040s notice: Server ready, "Marks_MacBook_Pro_local_o4v" f2c5572f-bc80-4efc-b10f-e796168d3a70
+2018-07-22T15:17:41.145262000 8.257014s notice: Server got SIGINT from pid 622, uid 501; shutting down...
+2018-07-22T15:17:41.145678000 8.257430s notice: Shutting down client connections...
+2018-07-22T15:17:41.145907000 8.257658s notice: All client connections closed.
+2018-07-22T15:17:41.145929000 8.257680s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2018-07-22T15:17:41.146739000 8.258491s notice: Storage engine shut down.
+2018-07-22T15:17:43.589121000 0.007938s notice: Running rethinkdb 2.3.6 (CLANG 9.0.0 (clang-900.0.37))...
+2018-07-22T15:17:43.592931000 0.011745s notice: Running on Darwin 17.5.0 x86_64
+2018-07-22T15:17:43.593001000 0.011814s notice: Loading data from directory /Users/markmurray/apps/mood/rethinkdb_data
+2018-07-22T15:17:43.628163000 0.046977s info: Automatically using cache size of 2534 MB
+2018-07-22T15:17:43.629536000 0.048349s notice: Listening for intracluster connections on port 29015
+2018-07-22T15:17:43.634035000 0.052849s notice: Listening for client driver connections on port 28015
+2018-07-22T15:17:43.634320000 0.053134s notice: Listening for administrative HTTP connections on port 8080
+2018-07-22T15:17:43.634326000 0.053139s notice: Listening on cluster addresses: 127.0.0.1, ::1
+2018-07-22T15:17:43.634335000 0.053148s notice: Listening on driver addresses: 127.0.0.1, ::1
+2018-07-22T15:17:43.634338000 0.053152s notice: Listening on http addresses: 127.0.0.1, ::1
+2018-07-22T15:17:43.634347000 0.053160s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-07-22T15:17:43.634356000 0.053169s notice: Server ready, "Marks_MacBook_Pro_local_o4v" f2c5572f-bc80-4efc-b10f-e796168d3a70
+2018-07-22T15:22:47.585710000 304.002844s notice: Server got SIGINT from pid 622, uid 501; shutting down...
+2018-07-22T15:22:47.586031000 304.003164s notice: Shutting down client connections...
+2018-07-22T15:22:47.586237000 304.003371s notice: All client connections closed.
+2018-07-22T15:22:47.586267000 304.003401s notice: Shutting down storage engine... (This may take a while if you had a lot of unflushed data in the writeback cache.)
+2018-07-22T15:22:47.586978000 304.004112s notice: Storage engine shut down.

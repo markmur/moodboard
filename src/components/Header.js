@@ -28,7 +28,7 @@ const Nav = styled.header`
 
 const Header = ({ history }) => (
   <Nav>
-    <Flex flexWrap={false} justify="space-between" align="center">
+    <Flex flexWrap="nowrap" justify="space-between" align="center">
       <Logo />
       <ul>
         <li>
@@ -43,7 +43,7 @@ const Header = ({ history }) => (
                     type="button"
                     style={{ cursor: 'pointer' }}
                     onClick={() =>
-                      firebase.logout().then(() => history.replace('/login'))
+                      firebase.signOut().then(() => history.replace('/login'))
                     }
                   >
                     Logout

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { Trash } from '../icons'
 import { Consumer } from '../context/Auth'
 import firebase from '../services/firebase'
-import { Content } from '../styles'
+import { Content, Truncate } from '../styles'
 import BoardIcon from '../icons/board'
 
 import { storePropTypes } from '../prop-types'
@@ -36,9 +36,10 @@ const Public = styled.small.attrs({
   children: 'Public'
 })`
   margin-top: 5px;
-  display: block;
+  display: inline-block;
   visibility: ${p => (p.public ? 'visible' : 'hidden')};
   color: blue;
+  margin-right: 5px;
   font-weight: bold;
 `
 
@@ -74,9 +75,7 @@ class Boards extends Component {
         <Box mb={4}>
           <p>You have no boards yet. Get started by creating one!</p>
         </Box>
-        <Button>
-          <Link to="/boards/new">Create Board</Link>
-        </Button>
+        <Button to="/boards/new">Create Board</Button>
       </Flex>
     )
   }
@@ -87,10 +86,8 @@ class Boards extends Component {
     return (
       <Content minHeight pt={4} bg="white">
         <Flex justify="space-between" align="center">
-          <h2>My Boards</h2>
-          <Button>
-            <Link to="/boards/new">Create Board</Link>
-          </Button>
+          <h3>My Boards</h3>
+          <Button to="/boards/new">Create Board</Button>
         </Flex>
 
         {store.boards.hasData ? (
@@ -107,7 +104,9 @@ class Boards extends Component {
                   <Link to={`/boards/${board.id}`}>
                     <div>
                       <h2>{board.name}</h2>
-                      <Description>{board.description}</Description>
+                      <Description>
+                        <Truncate>{board.description}</Truncate>
+                      </Description>
                       <Public public={board.public} />
                     </div>
 
@@ -121,10 +120,10 @@ class Boards extends Component {
           this.renderEmptyState()
         )}
 
-        {store.following.hasData && (
-          <Box mt={5}>
-            <h2>Following</h2>
+        <Box mt={5}>
+          <h3>Following</h3>
 
+          {store.following.hasData ? (
             <Flex flexWrap="wrap" py={3} mx={-3}>
               {store.following.data.map(board => (
                 <Box
@@ -146,8 +145,10 @@ class Boards extends Component {
                 </Box>
               ))}
             </Flex>
-          </Box>
-        )}
+          ) : (
+            <p>Boards you follow will appear here</p>
+          )}
+        </Box>
       </Content>
     )
   }

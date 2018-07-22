@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { space } from 'styled-system'
 
 const type = p => {
   switch (p.type) {
@@ -15,13 +17,17 @@ class Button extends Component {
   static defaultProps = {
     children: '',
     hoverText: '',
-    className: ''
+    className: '',
+    to: null,
+    tag: 'a'
   }
 
   static propTypes = {
     children: PropTypes.string,
     hoverText: PropTypes.string,
-    className: PropTypes.string
+    className: PropTypes.string,
+    to: PropTypes.string,
+    tag: PropTypes.string
   }
 
   state = {
@@ -31,34 +37,36 @@ class Button extends Component {
   updateState = hover => () => this.setState({ hover })
 
   render() {
-    const { children, hoverText, className, ...rest } = this.props
     const { hover } = this.state
+    const { children, hoverText, className, to, tag, ...rest } = this.props
+    const text = hoverText && hover ? hoverText : children
 
-    let text
-
-    if (hoverText && hover) text = hoverText
-    else text = children
+    const Tag = to ? Link : tag
 
     return (
-      <a
+      <Tag
         {...rest}
+        to={to}
         className={className}
         onMouseOver={this.updateState(true)}
         onMouseOut={this.updateState(false)}
         type="button"
       >
         {text}
-      </a>
+      </Tag>
     )
   }
 }
 
-export default styled(Button)`
-  display: block;
+export const SubmitButton = styled.input.attrs({
+  type: 'submit',
+  primary: true
+})`
+  display: inline-block;
   font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
-  color: white;
+  color: white !important;
   cursor: pointer;
   padding: 1em 2em;
 
@@ -69,4 +77,24 @@ export default styled(Button)`
   }
 
   ${props => props.theme.borderRadius};
+  ${space};
+`
+
+export default styled(Button)`
+  display: block;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white !important;
+  cursor: pointer;
+  padding: 1em 2em;
+
+  ${type};
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  ${props => props.theme.borderRadius};
+  ${space};
 `
