@@ -151,7 +151,10 @@ class CommentsPanel extends Component {
           <h1 onClick={this.props.onClose}>Comments</h1>
           <p>
             Leave comments on an image to talk to other members or leave notes
-            for yourself 😸
+            for yourself{' '}
+            <span role="img" aria-label="emoji">
+              😸
+            </span>
           </p>
         </header>
 
