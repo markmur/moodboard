@@ -4,8 +4,7 @@ env:
 language: node_js
 node_js:
   - 8
-install:
-  — npm install -g firebase-tools yarn
+install: npm install -g firebase-tools yarn
 script:
   — yarn build
 after_success:
