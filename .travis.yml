@@ -3,6 +3,7 @@ env:
 
 language: node_js
 node_js: 8
+cache: yarn
 install: npm install -g firebase-tools yarn
 script: yarn && yarn build
-after_success: firebase deploy —-project=moodboard-b788b --token=$FIREBASE_TOKEN
+after_success: firebase deploy --project=moodboard-b788b --token=$FIREBASE_TOKEN
