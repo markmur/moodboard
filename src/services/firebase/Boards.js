@@ -1,7 +1,4 @@
 import { BOARDS, USERS, IMAGES } from '../constants'
-import { checkStrLength } from '../validate'
-
-const validateString = checkStrLength()
 
 export function getBoard(id) {
   return this.db.collection(BOARDS).doc(id)
@@ -55,8 +52,6 @@ export function createBoard(uid, { name, description = '' }) {
 }
 
 export function updateBoard(id, field, value) {
-  validateString(field)
-
   return this.db
     .collection(BOARDS)
     .doc(id)
@@ -67,9 +62,6 @@ export function updateBoard(id, field, value) {
 }
 
 export function followBoard(id, uid) {
-  validateString(id)
-  validateString(uid)
-
   return this.db
     .collection(BOARDS)
     .doc(id)
@@ -84,9 +76,6 @@ export function followBoard(id, uid) {
 }
 
 export function unfollowBoard(id, uid) {
-  validateString(id)
-  validateString(uid)
-
   return this.db
     .collection(BOARDS)
     .doc(id)
@@ -101,8 +90,6 @@ export function unfollowBoard(id, uid) {
 }
 
 export function deleteBoard(id) {
-  validateString(id)
-
   return this.db
     .collection(BOARDS)
     .doc(id)
