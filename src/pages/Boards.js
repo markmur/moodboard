@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Flex, Box } from 'grid-styled'
 import styled from 'styled-components'
-import { Trash } from '../icons'
 import { Consumer } from '../context/Auth'
 import firebase from '../services/firebase'
 import { Content, Truncate } from '../styles'
@@ -110,7 +109,7 @@ class Boards extends Component {
                       <Public public={board.public} />
                     </div>
 
-                    <Trash onClick={this.handleBoardDelete(board.id)} />
+                    <div onClick={this.handleBoardDelete(board.id)}>Delete</div>
                   </Link>
                 </Board>
               </Box>

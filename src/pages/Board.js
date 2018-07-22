@@ -7,7 +7,6 @@ import AutosizeInput from 'react-input-autosize'
 import { Flex, Box } from 'grid-styled'
 import memoize from 'memoize-one'
 import Switch from 'react-switch'
-import { TiMessages as Messages } from 'react-icons/lib/ti'
 import pluralize from 'pluralize'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
@@ -326,17 +325,6 @@ class Board extends Component {
     }
   }
 
-  createCommentsMap = memoize(comments => {
-    return comments.reduce((state, comment) => {
-      if (comment.imageId in state) {
-        state[comment.imageId].push(comment)
-      } else {
-        state[comment.imageId] = [comment]
-      }
-      return state
-    }, {})
-  })
-
   createComment = event => {
     const { user, store } = this.props
     event.preventDefault()
@@ -367,7 +355,6 @@ class Board extends Component {
 
     const board = store.board.data
     const images = store.images.data
-    const comments = this.createCommentsMap(store.comments.data)
     const userHasPermission = this.userHasPermission(this.props)
 
     return (
@@ -515,15 +502,6 @@ class Board extends Component {
               }}
             >
               <div className="image" style={{ position: 'relative' }}>
-                {Array.isArray(comments[image.id]) &&
-                  comments[image.id].length > 0 && (
-                    <span>
-                      <span style={{ marginRight: 6 }}>
-                        <Messages size={20} />
-                      </span>
-                      {comments[image.id].length}
-                    </span>
-                  )}
                 {this.state.selected === image.id && (
                   <ImageToolbar>
                     <a onClick={this.deleteImage(image)}>Delete</a>
