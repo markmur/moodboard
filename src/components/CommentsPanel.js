@@ -78,19 +78,13 @@ const Message = styled(({ comment, align, className, showUser }) => {
           {typeof comment.from === 'object' && showUser ? (
             <strong>{comment.from.name}</strong>
           ) : null}
-          <Flex alignItems="center">
-            {right && deleteButton}
-            <p>{comment.message}</p>
-            {!right && deleteButton}
-          </Flex>
+          <p>{comment.message}</p>
+          {deleteButton}
         </div>
       </Flex>
     </li>
   )
 })`
-  &:hover a {
-    display: block;
-  }
   strong,
   small {
     display: block;
@@ -113,7 +107,7 @@ const Message = styled(({ comment, align, className, showUser }) => {
     padding: 6px 8px 8px;
     background: ${p => (p.primary ? 'blue' : 'white')};
     color: ${p => (p.primary ? 'white' : 'black')};
-    font-smoothing: subpixel-antialiased;
+    -webkit-font-smoothing: subpixel-antialiased;
     font-size: 14px;
     border-radius: 4px;
     box-shadow: ${p => p.theme.boxShadow};
