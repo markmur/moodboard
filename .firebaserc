@@ -1,5 +1,6 @@
 {
   "projects": {
-    "production": "moodboard-b788b"
+    "production": "moodboard-b788b",
+    "default": "moodboard-b788b"
   }
 }
