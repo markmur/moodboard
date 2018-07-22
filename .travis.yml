@@ -1,8 +1,11 @@
+env:
+  - NODE_ENV=production
+
 language: node_js
 node_js:
   - 8
 script:
-  — echo "Deploy!"
+  — yarn build
 install:
   — npm install -g firebase-tools
 after_success:
