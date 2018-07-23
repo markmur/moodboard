@@ -7,6 +7,7 @@ import firebase from '../services/firebase'
 import { Content, Truncate } from '../styles'
 import BoardIcon from '../icons/board'
 import Icon from '../components/Icon'
+import Loader from '../components/SmallLoader'
 
 import { storePropTypes } from '../prop-types'
 
@@ -86,11 +87,17 @@ class Boards extends Component {
     return (
       <Content minHeight pt={4} bg="white">
         <Flex justify="space-between" align="center">
-          <h3>My Boards</h3>
+          <h3>
+            My Boards {!store.boards.loading && `(${store.boards.data.length})`}
+          </h3>
           <Button to="/boards/new">Create Board</Button>
         </Flex>
 
-        {store.boards.hasData ? (
+        <Loader
+          showFallback={!store.boards.hasData}
+          loading={store.boards.loading}
+          fallback={this.renderEmptyState()}
+        >
           <Flex flexWrap="wrap" py={3} mx={-3}>
             {store.boards.data.map(board => (
               <Box
@@ -112,7 +119,8 @@ class Boards extends Component {
 
                     <Icon
                       type="trash"
-                      color="gray"
+                      color="lightgray"
+                      hoverColor="gray"
                       fontSize={20}
                       onClick={this.handleBoardDelete(board.id)}
                     />
@@ -121,14 +129,19 @@ class Boards extends Component {
               </Box>
             ))}
           </Flex>
-        ) : (
-          this.renderEmptyState()
-        )}
+        </Loader>
 
         <Box mt={5}>
-          <h3>Following</h3>
+          <h3>
+            Following{' '}
+            {!store.following.loading && `(${store.following.data.length})`}
+          </h3>
 
-          {store.following.hasData ? (
+          <Loader
+            showFallback={!store.following.hasData}
+            loading={store.following.loading}
+            fallback={<p>Boards you follow will appear here</p>}
+          >
             <Flex flexWrap="wrap" py={3} mx={-3}>
               {store.following.data.map(board => (
                 <Box
@@ -150,9 +163,7 @@ class Boards extends Component {
                 </Box>
               ))}
             </Flex>
-          ) : (
-            <p>Boards you follow will appear here</p>
-          )}
+          </Loader>
         </Box>
       </Content>
     )

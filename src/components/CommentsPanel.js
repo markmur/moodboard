@@ -84,7 +84,7 @@ const Message = styled(({ comment, align, className, showUser, canDelete }) => {
   strong,
   small {
     display: block;
-    color: #8396c3;
+    color: ${p => p.theme.colors.gray};
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     font-size: 12px;
@@ -138,6 +138,12 @@ class CommentsPanel extends Component {
     return get(prev, 'from.uid') !== get(next, 'from.uid')
   }
 
+  handleFormSubmit = async event => {
+    event.preventDefault()
+    await this.props.onCreateComment(this.form)
+    this.textarea.value = ''
+  }
+
   render() {
     const { user, comments } = this.props
 
@@ -176,9 +182,18 @@ class CommentsPanel extends Component {
             }}
             autoComplete="off"
             autofill="off"
-            onSubmit={this.props.onCreateComment}
+            onSubmit={this.handleFormSubmit}
           >
-            <StyledTextarea name="comment" placeholder="Your message..." />
+            <StyledTextarea
+              name="comment"
+              inputRef={c => {
+                this.textarea = c
+              }}
+              placeholder="Your message..."
+              onKeyPress={event => {
+                if (event.key === 'Enter') this.handleFormSubmit(event)
+              }}
+            />
             <SubmitButton value="Send" />
           </form>
         </Footer>

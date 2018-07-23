@@ -325,13 +325,12 @@ class Board extends Component {
     }
   }
 
-  createComment = event => {
+  createComment = form => {
     const { user, store } = this.props
-    event.preventDefault()
 
-    if (!event.target.comment) return
+    if (!form.comment) return
 
-    const message = event.target.comment.value.trim()
+    const message = form.comment.value.trim()
 
     if (!message || message.length <= 0) return
 
@@ -345,9 +344,6 @@ class Board extends Component {
         photoURL: user.photoURL
       }
     })
-
-    // Reset input value
-    event.target.comment.value = ''
   }
 
   render() {

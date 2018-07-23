@@ -10,8 +10,10 @@ const handleUploadProgress = snapshot => {
 }
 
 export function addImageToBoard(boardId, file, { name, x, y, width, height }) {
-  const url = `images/${name}`
+  const ext = name.slice(name.lastIndexOf('.') + 1)
+  const url = `images/${boardId}-${btoa(name)}.${ext}`
   const ref = this.storage.ref(url)
+
   const upload = ref.put(file, {
     cacheControl: 'private, max-age=31536000'
   })
@@ -37,17 +39,6 @@ export function addImageToBoard(boardId, file, { name, x, y, width, height }) {
             height
           }
         }
-
-        console.log({
-          id: newReference.id,
-          name,
-          href: referenceUrl,
-          position: {
-            x: x || 0,
-            y: y || 0
-          },
-          dimensions
-        })
 
         newReference
           .set({
