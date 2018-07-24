@@ -103,7 +103,7 @@ const Image = styled.img.attrs({
   alt: '',
   draggable: false
 })`
-  border: ${p => (p.selected ? '2px solid blue' : '1px solid #ddd')};
+  border: ${p => (p.selected ? '2px solid blue' : '1px solid transparent')};
 `
 
 const ImageToolbar = styled.div`
