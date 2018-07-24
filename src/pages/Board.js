@@ -8,6 +8,7 @@ import { Flex, Box } from 'grid-styled'
 import memoize from 'memoize-one'
 import Switch from 'react-switch'
 import pluralize from 'pluralize'
+import Textarea from 'react-textarea-autosize'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
@@ -83,12 +84,19 @@ const BoardName = styled(AutosizeInput).attrs({
   }
 `
 
-const BoardDescription = BoardName.extend`
-  input {
-    font-size: 1.45em;
-    font-weight: normal;
-    color: ${p => p.theme.colors.gray};
-  }
+const BoardDescription = styled(Textarea)`
+  color: black;
+  display: block;
+  background: transparent;
+  border: none;
+  font-size: 5rem;
+  font-weight: bolder;
+  outline: none;
+  font-size: 1.45em;
+  font-weight: normal;
+  color: ${p => p.theme.colors.gray};
+  resize: none;
+  width: 100%;
 `
 
 const Image = styled.img.attrs({
@@ -170,9 +178,7 @@ class Board extends Component {
       if (!board) this.props.history.replace('/boards')
 
       store.subscribe('images', this.boardId)
-      store.subscribe('comments', this.boardId, comments => {
-        console.log({ comments })
-      })
+      store.subscribe('comments', this.boardId)
     })
   }
 
@@ -181,13 +187,28 @@ class Board extends Component {
     this.props.store.unsubscribe('images')
   }
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(props, state) {
     const { name, description } = get(props, 'store.board.data', {})
 
-    return {
-      name,
-      description
+    if (!state.name || !state.description) {
+      return {
+        name,
+        description
+      }
     }
+
+    if (
+      name &&
+      description &&
+      (state.name !== name || state.description !== description)
+    ) {
+      return {
+        name: state.name,
+        description: state.description
+      }
+    }
+
+    return null
   }
 
   onDrop = async (acceptedFiles, rejectedFiles, event) => {
@@ -306,9 +327,9 @@ class Board extends Component {
   }
 
   handleChange = field => event => {
-    const value = event.target.value.trim()
+    const { value } = event.target
 
-    if (!field || !value || value.length <= 0) return
+    if (!field || value.length <= 0) return
 
     this.setState({
       [field]: value
@@ -408,7 +429,7 @@ class Board extends Component {
                   placeholder={store.board.loading ? '' : 'No description'}
                   onChange={this.handleChange('description')}
                   onBlur={this.handleBlur('description')}
-                  defaultValue={board.description}
+                  value={this.state.description}
                 />
               </div>
               <Flex justify="space-between" align="center">
