@@ -181,6 +181,15 @@ class Board extends Component {
     this.props.store.unsubscribe('images')
   }
 
+  static getDerivedStateFromProps(props) {
+    const { name, description } = get(props, 'store.board.data', {})
+
+    return {
+      name,
+      description
+    }
+  }
+
   onDrop = async (acceptedFiles, rejectedFiles, event) => {
     this.props.store.setGlobalLoadingState(true)
 
@@ -289,7 +298,11 @@ class Board extends Component {
   }
 
   handleBlur = field => () => {
-    this.updateBoard(field, this.state[field])
+    const board = this.props.store.board.data
+
+    if (this.state[field] !== board[field]) {
+      this.updateBoard(field, this.state[field])
+    }
   }
 
   handleChange = field => event => {
