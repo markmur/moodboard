@@ -84,6 +84,16 @@ export const Input = styled.input`
   width: 100%;
   font-size: 16px;
   margin-bottom: 1.5em;
+  outline: none;
+
+  &:hover {
+    border: 1px solid rgba(0, 0, 255, 0.25);
+  }
+
+  &:active,
+  &:focus {
+    border: 1px solid blue;
+  }
 `
 
 export const SubmitButton = styled.input.attrs({
