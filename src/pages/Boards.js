@@ -4,7 +4,7 @@ import { Flex, Box } from 'grid-styled'
 import styled from 'styled-components'
 import { Consumer } from '../context/Auth'
 import firebase from '../services/firebase'
-import { Content, Truncate } from '../styles'
+import { Content } from '../styles'
 import BoardIcon from '../icons/board'
 import Icon from '../components/Icon'
 import Loader from '../components/SmallLoader'
@@ -29,8 +29,19 @@ const Board = styled(Flex)`
   }
 `
 
-const Description = styled.p`
+const truncate = p =>
+  p.truncate &&
+  `
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`
+
+const Description = styled.p.attrs({
+  truncate: true
+})`
   color: ${p => p.theme.colors.gray};
+  ${truncate};
 `
 
 const Public = styled.small.attrs({
@@ -109,11 +120,9 @@ class Boards extends Component {
               >
                 <Board>
                   <Link to={`/boards/${board.id}`}>
-                    <div>
+                    <div style={{ overflow: 'hidden' }}>
                       <h2>{board.name}</h2>
-                      <Description>
-                        <Truncate>{board.description}</Truncate>
-                      </Description>
+                      <Description>{board.description}</Description>
                       <Public public={board.public} />
                     </div>
 
@@ -153,7 +162,7 @@ class Boards extends Component {
                 >
                   <Board>
                     <Link to={`/boards/${board.id}`}>
-                      <div>
+                      <div style={{ overflow: 'hidden' }}>
                         <h2>{board.name}</h2>
                         <Description>{board.description}</Description>
                         <Public public={board.public} />
