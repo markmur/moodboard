@@ -18,6 +18,16 @@ const StyledTextarea = styled(Textarea)`
   padding: 0.7em;
   margin-right: 0.5em;
   resize: none;
+  outline: none;
+
+  &:hover {
+    border: 1px solid rgba(0, 0, 255, 0.25);
+  }
+
+  &:active,
+  &:focus {
+    border: 1px solid blue;
+  }
 `
 
 const Header = styled.header`
