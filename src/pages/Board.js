@@ -336,6 +336,22 @@ class Board extends Component {
     })
   }
 
+  getImageById = id => {
+    return get(this.props.store, 'images.data', []).find(x => x.id === id)
+  }
+
+  bindKeyboardShortcuts = event => {
+    switch (event.key) {
+      case 'Backspace':
+        if (this.state.selected) {
+          this.deleteImage(this.getImageById(this.state.selected))()
+        }
+        break
+      default:
+        break
+    }
+  }
+
   handleCaptionClick = event => {
     if (!this.userHasPermission(this.props)) return
 
@@ -509,7 +525,7 @@ class Board extends Component {
           {({ isDragActive }) => (isDragActive ? <Overlay /> : null)}
         </StyledDropzone>
 
-        <Content>
+        <Content tabIndex="0" onKeyDown={this.bindKeyboardShortcuts}>
           {images.map(image => (
             <Draggable
               key={image.id}
