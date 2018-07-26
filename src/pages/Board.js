@@ -12,7 +12,7 @@ import Textarea from 'react-textarea-autosize'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
-import CommentsPanel from '../components/CommentsPanel'
+import CommentsPanel from '../components/CommentsPanel/CommentsPanel'
 import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
 import {
   get,
