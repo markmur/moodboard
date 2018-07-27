@@ -416,6 +416,7 @@ class Board extends Component {
           <CommentsPanel
             visible={this.state.commentsPanelOpen}
             user={user}
+            loading={store.comments.loading}
             comments={store.comments.data}
             onCreateComment={this.createComment}
             onClose={() =>

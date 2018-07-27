@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import styled from 'styled-components'
 
 export default styled(props => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
@@ -89,4 +89,4 @@ export default styled(props => (
   .cls-8 {
     fill: #23a859;
   }
-`;
+`
