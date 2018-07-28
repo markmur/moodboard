@@ -11,6 +11,7 @@ const hoverColor = p => `
 export default styled(({ type, className, ...props }) => (
   <i {...props} className={`icon-${type} ${className}`} />
 ))`
+  ${p => p.pointer && 'cursor: pointer'};
   ${fontSize};
   ${color};
   ${space};

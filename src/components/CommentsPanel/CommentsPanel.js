@@ -8,6 +8,7 @@ import ChatIcon from '../../icons/chat'
 import Loader from '../SmallLoader'
 import { SubmitButton } from '../Button'
 import SlidePanel from '../SlidePanel'
+import Icon from '../Icon'
 import Message from './Message'
 
 import { StyledTextarea, Header, Main, Footer } from './styles'
@@ -62,62 +63,73 @@ class CommentsPanel extends Component {
     const { user, comments, loading } = this.props
 
     return (
-      <SlidePanel visible={this.props.visible}>
-        <Header>
-          <h1 onClick={this.props.onClose}>Comments</h1>
-          <p>
-            Leave comments on an image to talk to other members or leave notes
-            for yourself{' '}
-            <span role="img" aria-label="emoji">
-              😸
-            </span>
-          </p>
-        </Header>
+      <div>
+        <SlidePanel visible={this.props.visible}>
+          <Header>
+            <Flex justifyContent="space-between" alignItems="center">
+              <h1>Comments</h1>
+              <Icon
+                color="lightgray"
+                hoverColor="gray"
+                pointer
+                type="close"
+                onClick={this.props.onClose}
+              />
+            </Flex>
+            <p>
+              Leave comments on an image to talk to other members or leave notes
+              for yourself{' '}
+              <span role="img" aria-label="emoji">
+                😸
+              </span>
+            </p>
+          </Header>
 
-        <Main>
-          <Loader
-            loading={loading}
-            showFallback={!loading && comments.length <= 0}
-            fallback={<EmptyState />}
-          >
-            <ul>
-              {comments.map((comment, i) => (
-                <Message
-                  key={comment.id}
-                  primary={get(comment, 'from.uid') === user.uid}
-                  showUser={this.showUser(user.uid, comments[i - 1], comment)}
-                  canDelete={comment.from.uid === user.uid}
-                  align={comment.from.uid === user.uid ? 'right' : 'left'}
-                  comment={comment}
-                />
-              ))}
-            </ul>
-          </Loader>
-        </Main>
+          <Main>
+            <Loader
+              loading={loading}
+              showFallback={!loading && comments.length <= 0}
+              fallback={<EmptyState />}
+            >
+              <ul>
+                {comments.map((comment, i) => (
+                  <Message
+                    key={comment.id}
+                    primary={get(comment, 'from.uid') === user.uid}
+                    showUser={this.showUser(user.uid, comments[i - 1], comment)}
+                    canDelete={comment.from.uid === user.uid}
+                    align={comment.from.uid === user.uid ? 'right' : 'left'}
+                    comment={comment}
+                  />
+                ))}
+              </ul>
+            </Loader>
+          </Main>
 
-        <Footer>
-          <form
-            ref={c => {
-              this.form = c
-            }}
-            autoComplete="off"
-            autofill="off"
-            onSubmit={this.handleFormSubmit}
-          >
-            <StyledTextarea
-              name="comment"
-              inputRef={c => {
-                this.textarea = c
+          <Footer>
+            <form
+              ref={c => {
+                this.form = c
               }}
-              placeholder="Your message..."
-              onKeyPress={event => {
-                if (event.key === 'Enter') this.handleFormSubmit(event)
-              }}
-            />
-            <SubmitButton value="Send" />
-          </form>
-        </Footer>
-      </SlidePanel>
+              autoComplete="off"
+              autofill="off"
+              onSubmit={this.handleFormSubmit}
+            >
+              <StyledTextarea
+                name="comment"
+                inputRef={c => {
+                  this.textarea = c
+                }}
+                placeholder="Your message..."
+                onKeyPress={event => {
+                  if (event.key === 'Enter') this.handleFormSubmit(event)
+                }}
+              />
+              <SubmitButton value="Send" />
+            </form>
+          </Footer>
+        </SlidePanel>
+      </div>
     )
   }
 }
