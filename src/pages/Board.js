@@ -8,6 +8,7 @@ import { Flex, Box } from 'grid-styled'
 import memoize from 'memoize-one'
 import Switch from 'react-switch'
 import pluralize from 'pluralize'
+import { without } from 'lodash-es'
 import Textarea from 'react-textarea-autosize'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
@@ -161,7 +162,7 @@ class Board extends Component {
 
   state = {
     loading: true,
-    selected: null,
+    selected: [],
     name: '',
     description: '',
     images: [],
@@ -245,7 +246,7 @@ class Board extends Component {
                     width,
                     height,
                     x: pageX,
-                    y: pageY
+                    y: pageY - height
                   })
                   .catch(reject)
               )
@@ -347,8 +348,10 @@ class Board extends Component {
 
     switch (event.key) {
       case 'Backspace':
-        if (this.state.selected) {
-          this.deleteImage(this.getImageById(this.state.selected))()
+        if (this.state.selected && this.state.selected.length > 0) {
+          this.state.selected.forEach(selected => {
+            this.deleteImage(this.getImageById(selected))()
+          })
         }
         break
       default:
@@ -378,6 +381,26 @@ class Board extends Component {
       this.updateImage(image.id, 'caption', event.target.value)
     }
   }
+
+  selectImage = image => event => {
+    const { uid } = this.props.user
+    const board = this.props.store.board.data
+
+    const { metaKey } = event
+
+    if (event.target.tagName === 'IMG' && board.createdBy === uid) {
+      // If the cmd/ctrl key is held, append the image
+      this.setState(({ selected }) => ({
+        selected: metaKey
+          ? this.selected(image.id)
+            ? without(selected, image.id)
+            : [...selected, image.id]
+          : [image.id]
+      }))
+    }
+  }
+
+  selected = id => this.state.selected.includes(id)
 
   createComment = form => {
     const { user, store } = this.props
@@ -413,7 +436,7 @@ class Board extends Component {
           const { classList } = event.target.parentNode
 
           if (!classList.contains('image') && !classList.contains('caption'))
-            this.setState({ selected: null })
+            this.setState({ selected: [] })
         }}
       >
         {userHasPermission && (
@@ -544,26 +567,16 @@ class Board extends Component {
                 lockAspectRatio
                 onDragStop={this.handleDragEnd(image.id)}
                 onResize={this.handleResize(image.id)}
-                onClick={event => {
-                  if (
-                    event.target.tagName === 'IMG' &&
-                    board.createdBy === user.uid
-                  ) {
-                    this.setState({ selected: image.id })
-                  }
-                }}
+                onClick={this.selectImage(image)}
               >
                 <div className="image" style={{ position: 'relative' }}>
-                  {this.state.selected === image.id && (
+                  {this.selected(image.id) && (
                     <ImageToolbar>
                       <a onClick={this.deleteImage(image)}>Delete</a>
                     </ImageToolbar>
                   )}
-                  <Image
-                    selected={this.state.selected === image.id}
-                    src={image.href}
-                  />
-                  {image.caption || this.state.selected === image.id ? (
+                  <Image selected={this.selected(image.id)} src={image.href} />
+                  {image.caption || this.selected(image.id) ? (
                     <Caption
                       className="caption"
                       onMouseDown={this.handleCaptionClick}
