@@ -4,6 +4,19 @@ export function uploadImage(blob, meta) {
   return this.storage().put(blob, meta)
 }
 
+export function updateIndex(boardId, imageId, index = 1) {
+  if (typeof index !== 'number') {
+    throw new TypeError('`index` must be a number')
+  }
+
+  return this.db
+    .collection(BOARDS)
+    .doc(boardId)
+    .collection(IMAGES)
+    .doc(imageId)
+    .update({ index })
+}
+
 const handleUploadProgress = snapshot => {
   const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
   console.log(percent + '% done')

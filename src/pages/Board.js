@@ -10,10 +10,12 @@ import Switch from 'react-switch'
 import pluralize from 'pluralize'
 import { without } from 'lodash-es'
 import Textarea from 'react-textarea-autosize'
+import { Tooltip } from 'react-tippy'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
 import Loader from '../components/SmallLoader'
+import Icon from '../components/Icon'
 import CommentsPanel from '../components/CommentsPanel/CommentsPanel'
 import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
 import {
@@ -22,6 +24,8 @@ import {
   calculateDimensions,
   DEFAULT_WIDTH
 } from '../services/utils'
+
+const DEFAULT_Z_INDEX = 1
 
 const Overlay = styled.div.attrs({
   children: 'Drop files to upload'
@@ -116,7 +120,7 @@ const ImageToolbar = styled.div`
   color: white;
   font-size: 12px;
   font-weight: bold;
-  justify-content: flex-end;
+  justify-content: space-between;
   background: blue;
   padding: 6px;
   cursor: default;
@@ -367,6 +371,36 @@ class Board extends Component {
     event.target.focus()
   }
 
+  get maxZIndex() {
+    const images = this.props.store.images.data
+    const indexes = images.map(image => image.index || DEFAULT_Z_INDEX)
+
+    return Math.max(...indexes)
+  }
+
+  setDefaultIndex = imageId => {
+    return firebase.updateIndex(this.boardId, imageId, DEFAULT_Z_INDEX)
+  }
+
+  incrementZIndex = image => event => {
+    event.stopPropagation()
+    if (!image.index || typeof image.index !== 'number')
+      return this.setDefaultIndex(image.id)
+
+    const max = this.maxZIndex
+    if (image.index + 1 <= max + 1)
+      firebase.updateIndex(this.boardId, image.id, image.index + 1)
+  }
+
+  decrementZIndex = image => event => {
+    event.stopPropagation()
+    if (!image.index || typeof image.index !== 'number')
+      return this.setDefaultIndex(image.id)
+
+    if (image.index - 1 > 0)
+      firebase.updateIndex(this.boardId, image.id, image.index - 1)
+  }
+
   userHasPermission = memoize(props => {
     const { store, user } = props
     const { uid } = user
@@ -568,10 +602,35 @@ class Board extends Component {
                 onDragStop={this.handleDragEnd(image.id)}
                 onResize={this.handleResize(image.id)}
                 onClick={this.selectImage(image)}
+                style={{
+                  zIndex: Number(image.index) || DEFAULT_Z_INDEX
+                }}
               >
-                <div className="image" style={{ position: 'relative' }}>
+                <div
+                  className="image"
+                  style={{
+                    position: 'relative'
+                  }}
+                >
                   {this.selected(image.id) && (
                     <ImageToolbar>
+                      <Tooltip title="Bring image back or forward" size="small">
+                        <div>
+                          <Icon
+                            pointer
+                            type="minus-outline"
+                            color="white"
+                            mr={1}
+                            onClick={this.decrementZIndex(image)}
+                          />
+                          <Icon
+                            pointer
+                            type="add-outline"
+                            color="white"
+                            onClick={this.incrementZIndex(image)}
+                          />
+                        </div>
+                      </Tooltip>
                       <a onClick={this.deleteImage(image)}>Delete</a>
                     </ImageToolbar>
                   )}
