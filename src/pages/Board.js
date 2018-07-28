@@ -12,6 +12,7 @@ import Textarea from 'react-textarea-autosize'
 import firebase from '../services/firebase'
 import { Avatars, Content, Label } from '../styles'
 import Button from '../components/Button'
+import Loader from '../components/SmallLoader'
 import CommentsPanel from '../components/CommentsPanel/CommentsPanel'
 import { storePropTypes, userPropTypes, historyPropTypes } from '../prop-types'
 import {
@@ -527,49 +528,51 @@ class Board extends Component {
         </StyledDropzone>
 
         <Content tabIndex="0" onKeyDown={this.bindKeyboardShortcuts}>
-          {images.map(image => (
-            <Draggable
-              key={image.id}
-              default={{
-                x: image.position.x,
-                y: image.position.y,
-                width: get(image, 'dimensions.width', DEFAULT_WIDTH)
-              }}
-              disableDragging={!userHasPermission}
-              lockAspectRatio
-              onDragStop={this.handleDragEnd(image.id)}
-              onResize={this.handleResize(image.id)}
-              onClick={event => {
-                if (
-                  event.target.tagName === 'IMG' &&
-                  board.createdBy === user.uid
-                ) {
-                  this.setState({ selected: image.id })
-                }
-              }}
-            >
-              <div className="image" style={{ position: 'relative' }}>
-                {this.state.selected === image.id && (
-                  <ImageToolbar>
-                    <a onClick={this.deleteImage(image)}>Delete</a>
-                  </ImageToolbar>
-                )}
-                <Image
-                  selected={this.state.selected === image.id}
-                  src={image.href}
-                />
-                {image.caption || this.state.selected === image.id ? (
-                  <Caption
-                    className="caption"
-                    onMouseDown={this.handleCaptionClick}
-                    onBlur={this.handleCaptionChange(image)}
-                    defaultValue={image.caption}
-                    placeholder="Add caption..."
+          <Loader loading={store.images.loading}>
+            {images.map(image => (
+              <Draggable
+                key={image.id}
+                default={{
+                  x: image.position.x,
+                  y: image.position.y,
+                  width: get(image, 'dimensions.width', DEFAULT_WIDTH)
+                }}
+                disableDragging={!userHasPermission}
+                lockAspectRatio
+                onDragStop={this.handleDragEnd(image.id)}
+                onResize={this.handleResize(image.id)}
+                onClick={event => {
+                  if (
+                    event.target.tagName === 'IMG' &&
+                    board.createdBy === user.uid
+                  ) {
+                    this.setState({ selected: image.id })
+                  }
+                }}
+              >
+                <div className="image" style={{ position: 'relative' }}>
+                  {this.state.selected === image.id && (
+                    <ImageToolbar>
+                      <a onClick={this.deleteImage(image)}>Delete</a>
+                    </ImageToolbar>
+                  )}
+                  <Image
+                    selected={this.state.selected === image.id}
+                    src={image.href}
                   />
-                ) : null}
-              </div>
-            </Draggable>
-          ))}
+                  {image.caption || this.state.selected === image.id ? (
+                    <Caption
+                      className="caption"
+                      onMouseDown={this.handleCaptionClick}
+                      onBlur={this.handleCaptionChange(image)}
+                      defaultValue={image.caption}
+                      placeholder="Add caption..."
+                    />
+                  ) : null}
+                </div>
+              </Draggable>
+            ))}
+          </Loader>
         </Content>
       </BoardContainer>
     )
