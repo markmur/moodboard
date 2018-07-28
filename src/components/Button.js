@@ -82,12 +82,15 @@ export const SubmitButton = styled.input.attrs({
 
 export default styled(Button)`
   display: block;
+  white-space: nowrap;
   font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
   color: white !important;
   cursor: pointer;
   padding: 1em 2em;
+  border: none;
+  box-shadow: ${p => p.theme.shadow};
 
   ${type};
 

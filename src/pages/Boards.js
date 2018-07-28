@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Flex, Box } from 'grid-styled'
 import styled from 'styled-components'
+import { differenceBy } from 'lodash-es'
 import { Consumer } from '../context/Auth'
 import firebase from '../services/firebase'
 import { Content } from '../styles'
@@ -94,6 +95,9 @@ class Boards extends Component {
 
   render() {
     const { store } = this.props
+    const { following } = store
+
+    const boards = differenceBy(store.boards.data, following.data, 'id')
 
     return (
       <Content minHeight pt={4} bg="white">
@@ -105,12 +109,12 @@ class Boards extends Component {
         </Flex>
 
         <Loader
-          showFallback={!store.boards.hasData}
+          showFallback={!store.boards.loading && boards.length <= 0}
           loading={store.boards.loading}
           fallback={this.renderEmptyState()}
         >
           <Flex flexWrap="wrap" py={3} mx={-3}>
-            {store.boards.data.map(board => (
+            {boards.map(board => (
               <Box
                 key={board.id}
                 mb={3}
@@ -142,17 +146,16 @@ class Boards extends Component {
 
         <Box mt={5}>
           <h3>
-            Following{' '}
-            {!store.following.loading && `(${store.following.data.length})`}
+            Following {!following.loading && `(${following.data.length})`}
           </h3>
 
           <Loader
-            showFallback={!store.following.hasData}
-            loading={store.following.loading}
+            showFallback={!following.hasData}
+            loading={following.loading}
             fallback={<p>Boards you follow will appear here</p>}
           >
             <Flex flexWrap="wrap" py={3} mx={-3}>
-              {store.following.data.map(board => (
+              {following.data.map(board => (
                 <Box
                   key={board.id}
                   mb={3}

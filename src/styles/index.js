@@ -69,7 +69,7 @@ export const Error = styled.small`
 
 export const Label = styled.label`
   display: block;
-  color: black;
+  color: ${p => p.theme.colors.label};
   font-weight: bold;
   font-size: 13px;
   margin-bottom: 8px;
@@ -77,14 +77,19 @@ export const Label = styled.label`
 
 export const Input = styled.input`
   display: block;
-  background: white;
-  padding: 1em;
-  border: 1px solid #ddd;
+  background: ${p => p.theme.colors.input};
+  padding: 10px 16px;
+  border: 1px solid transparent;
   border-radius: 4px;
   width: 100%;
-  font-size: 16px;
+  font-weight: bold;
+  font-size: 23px;
   margin-bottom: 1.5em;
   outline: none;
+
+  &::placeholder {
+    color: ${p => p.theme.colors.placeholder};
+  }
 
   &:hover {
     border: 1px solid rgba(0, 0, 255, 0.25);
@@ -110,6 +115,8 @@ export const SubmitButton = styled.input.attrs({
   font-weight: bold;
   text-transform: uppercase;
   text-align: center;
+  border: none;
+  box-shadow: ${p => p.theme.shadow};
 
   &:hover {
     background: #222;

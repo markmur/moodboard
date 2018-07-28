@@ -8,6 +8,7 @@ export default {
   colors: {
     lightgray: '#a3b6d2',
     input: '#f4f4f7',
+    placeholder: '#a3b6d2',
     label: '#93a9cc',
     gray: '#6e7f99',
     success: '#47bf47'
