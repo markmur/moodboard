@@ -420,12 +420,12 @@ class Board extends Component {
     const { uid } = this.props.user
     const board = this.props.store.board.data
 
-    const { metaKey } = event
+    const { shiftKey } = event
 
     if (event.target.tagName === 'IMG' && board.createdBy === uid) {
       // If the cmd/ctrl key is held, append the image
       this.setState(({ selected }) => ({
-        selected: metaKey
+        selected: shiftKey
           ? this.selected(image.id)
             ? without(selected, image.id)
             : [...selected, image.id]
