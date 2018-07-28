@@ -342,6 +342,9 @@ class Board extends Component {
   }
 
   bindKeyboardShortcuts = event => {
+    // Ignore keypresses when no image is selected
+    if (!this.state.selected) return
+
     switch (event.key) {
       case 'Backspace':
         if (this.state.selected) {

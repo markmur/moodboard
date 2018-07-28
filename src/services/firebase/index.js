@@ -17,19 +17,21 @@ if (firebase.apps.length <= 0) {
   app = firebase.initializeApp(firebaseConfig)
 }
 
-function FirebaseClient(fb) {
-  const { firestore, storage, auth } = fb
+class FirebaseClient {
+  constructor(fb) {
+    const { firestore, storage, auth } = fb
 
-  this.firebase = fb
-  this.db = firestore(app)
-  this.db.settings({ timestampsInSnapshots: true })
-  this.storage = storage()
-  this.auth = auth
-  this.timestamp = firestore.FieldValue.serverTimestamp()
-  this.handleError = name => error => {
-    console.log(name, error)
+    this.firebase = fb
+    this.db = firestore(app)
+    this.db.settings({ timestampsInSnapshots: true })
+    this.storage = storage()
+    this.auth = auth
+    this.timestamp = firestore.FieldValue.serverTimestamp()
+    this.handleError = name => error => {
+      console.log(name, error)
+    }
+    this.documentId = firebase.firestore.FieldPath
   }
-  this.documentId = firebase.firestore.FieldPath
 }
 
 const extend = (obj, fns) => {

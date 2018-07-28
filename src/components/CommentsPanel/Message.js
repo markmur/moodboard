@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Flex, Box } from 'grid-styled'
+import { format } from 'date-fns'
+import { Tooltip } from 'react-tippy'
 import firebase from '../../services/firebase'
 import { Avatar } from '../../styles'
 
@@ -12,13 +14,9 @@ const Message = styled(({ comment, align, className, showUser, canDelete }) => {
   }
 
   const deleteButton = canDelete && (
-    <div>
-      <a type="button">
-        <strong onClick={() => firebase.deleteComment(comment.id)}>
-          Delete
-        </strong>
-      </a>
-    </div>
+    <a type="button">
+      <strong onClick={() => firebase.deleteComment(comment.id)}>Delete</strong>
+    </a>
   )
 
   return (
@@ -33,17 +31,18 @@ const Message = styled(({ comment, align, className, showUser, canDelete }) => {
           {typeof comment.from === 'object' && showUser ? (
             <strong>{comment.from.name}</strong>
           ) : null}
-          <p>{comment.message}</p>
+          <Tooltip
+            size="small"
+            title={format(new Date(comment.createdAt.toDate()), 'ddd H:s')}
+          >
+            <p>{comment.message}</p>
+          </Tooltip>
           {deleteButton}
         </div>
       </Flex>
     </li>
   )
 })`
-  &:hover a {
-    display: block;
-  }
-
   strong,
   small {
     display: block;
@@ -56,10 +55,6 @@ const Message = styled(({ comment, align, className, showUser, canDelete }) => {
 
   a > strong {
     cursor: pointer;
-  }
-
-  a {
-    display: none;
   }
 
   p {
