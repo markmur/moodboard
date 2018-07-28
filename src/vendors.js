@@ -8,6 +8,12 @@ module.exports = {
     'firebaseui',
     'react-draggable',
     'grid-styled',
-    'styled-components'
+    'styled-components',
+    'styled-system',
+    'react-tippy',
+    'lodash-es',
+    'memoize-one',
+    'pluralize',
+    'date-fns'
   ]
 }
