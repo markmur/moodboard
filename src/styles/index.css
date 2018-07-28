@@ -6,6 +6,11 @@
 @import url('https://fonts.googleapis.com/css?family=Dosis:400,700|Nanum+Pen+Script');
 @import './icons.css';
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   position: relative;
   margin: 0;
@@ -15,7 +20,6 @@ body {
   background-image: url(../images/bg.png);
   background-repeat: repeat;
   letter-spacing: 0.85px;
-  overflow-x: hidden;
 }
 
 ::selection {

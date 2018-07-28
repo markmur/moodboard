@@ -10,7 +10,8 @@ export default styled.div`
   top: 0;
   background: white;
   z-index: 10;
-  box-shadow: -10px 0 20px 0 rgba(0, 0, 2, 0.075);
+  box-shadow: ${p =>
+    p.visible ? '-10px 0 20px 0 rgba(0, 0, 2, 0.075)' : 'none'};
   transform: translateX(${p => (p.visible ? 0 : '100%')});
   transition: transform 200ms ease-out;
 `
